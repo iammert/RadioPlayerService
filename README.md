@@ -20,7 +20,7 @@ repositories {
 
 ```
 dependencies {
-    compile 'com.github.iammert:RadioPlayerService:78e2a6198e'
+    compile 'com.github.iammert:RadioPlayerService:4ab6bafbbf'
 }
 ```
 
