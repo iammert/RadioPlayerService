@@ -7,6 +7,8 @@ import java.util.ArrayList;
  */
 public interface RadioListener {
 
+    void onRadioConnected();
+
     void onRadioStarted();
 
     void onRadioStopped();
