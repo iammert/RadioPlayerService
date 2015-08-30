@@ -85,6 +85,8 @@ public class RadioManager implements IRadioManager{
             if(!mRadioListenerQueue.isEmpty()){
                 for (RadioListener mRadioListener : mRadioListenerQueue){
                     registerListener(mRadioListener);
+
+                    mRadioListener.onRadioConnected();
                 }
             }
         }

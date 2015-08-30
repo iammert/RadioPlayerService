@@ -77,6 +77,12 @@ public class MainActivity extends Activity implements RadioListener {
     }
 
     @Override
+    public void onRadioConnected() {
+        // Called when the service is connected, allowing, for example, for starting the stream as soon as possible
+        // mRadioManager.startRadio(RADIO_URL);
+    }
+
+    @Override
     public void onRadioStarted() {
         runOnUiThread(new Runnable() {
             @Override
