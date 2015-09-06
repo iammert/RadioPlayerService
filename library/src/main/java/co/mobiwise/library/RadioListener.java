@@ -14,4 +14,6 @@ public interface RadioListener {
     void onRadioStopped();
 
     void onMetaDataReceived(String s, String s2);
+
+    void onPlayerException(Throwable throwable);
 }
