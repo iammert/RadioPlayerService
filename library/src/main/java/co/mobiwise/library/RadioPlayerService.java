@@ -185,6 +185,8 @@ public class RadioPlayerService extends Service implements PlayerCallback {
 
     @Override
     public void playerException(Throwable throwable) {
+        mLock = false;
+
         for (RadioListener mRadioListener : mListenerList){
             mRadioListener.onPlayerException(throwable);
         }
