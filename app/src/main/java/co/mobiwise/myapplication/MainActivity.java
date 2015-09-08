@@ -1,6 +1,8 @@
 package co.mobiwise.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -107,5 +109,26 @@ public class MainActivity extends Activity implements RadioListener {
     @Override
     public void onMetaDataReceived(String s, String s1) {
         //TODO Check metadata values. Singer name, song name or whatever you have.
+    }
+
+    @Override
+    public void onPlayerException(Throwable throwable) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Cannot Stream Radio")
+                        .setMessage("There was a problem streaming the radio. Please check your Internet connection.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
     }
 }

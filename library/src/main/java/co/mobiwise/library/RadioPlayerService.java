@@ -1,7 +1,9 @@
 package co.mobiwise.library;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Binder;
 import android.os.IBinder;
@@ -87,6 +89,10 @@ public class RadioPlayerService extends Service implements PlayerCallback {
      */
     private boolean mLock;
 
+    private AudioManager audioManager;
+
+    private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener;
+
     /**
      * Binder
      */
@@ -124,6 +130,18 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         if(mTelephonyManager != null) {
             mTelephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
         }
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+            @Override
+            public void onAudioFocusChange(int focusChange) {
+                if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                    play(mRadioUrl);
+                } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                    stop();
+                }
+            }
+        };
     }
 
     /**
@@ -139,8 +157,19 @@ public class RadioPlayerService extends Service implements PlayerCallback {
             stop();
         }
         else if(!mLock){
-            mLock = true;
-            getPlayer().playAsync(mRadioUrl);
+            isSwitching = false;
+
+            int audioFocusRequestResult = audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+            if (audioFocusRequestResult == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mLock = true;
+
+                getPlayer().playAsync(mRadioUrl);
+            } else {
+                mLock = false;
+
+                notifyRadioStopped();
+            }
         }
 
     }
@@ -148,6 +177,9 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     public void stop(){
         if(!mLock){
             mLock = true;
+
+            audioManager.abandonAudioFocus(audioFocusChangeListener);
+
             getPlayer().stop();
         }
     }
@@ -185,7 +217,11 @@ public class RadioPlayerService extends Service implements PlayerCallback {
 
     @Override
     public void playerException(Throwable throwable) {
-        //Empty
+        mLock = false;
+
+        for (RadioListener mRadioListener : mListenerList){
+            mRadioListener.onPlayerException(throwable);
+        }
     }
 
     @Override
