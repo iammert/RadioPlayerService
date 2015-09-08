@@ -157,6 +157,8 @@ public class RadioPlayerService extends Service implements PlayerCallback {
             stop();
         }
         else if(!mLock){
+            isSwitching = false;
+
             int audioFocusRequestResult = audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
             if (audioFocusRequestResult == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
