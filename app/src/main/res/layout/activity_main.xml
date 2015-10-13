@@ -4,18 +4,28 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/buttonControl"
+        android:id="@+id/buttonControlStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="RADIO"
+        android:text="START"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"/>
+
+    <Button
+        android:id="@+id/buttonControlStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STOP"
+        android:layout_below="@+id/textviewControl"
+        android:layout_centerHorizontal="true"/>
+
+
 
     <TextView
         android:id="@+id/textviewControl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonControl"
+        android:layout_below="@+id/buttonControlStart"
         android:layout_marginTop="20dp"
         android:text="RADIO STATE : IDLE"
         android:layout_centerHorizontal="true"/>

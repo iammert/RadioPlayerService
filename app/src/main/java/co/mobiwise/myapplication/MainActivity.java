@@ -15,14 +15,17 @@ public class MainActivity extends Activity implements RadioListener {
     /**
      * Example radio stream URL
      */
-    private final String RADIO_URL = "http://37.247.100.115/;stream.nsv";
+    private final String[] RADIO_URL = {"http://radyoland.radyotvonline.com/radyoland/akustikland/icecast.audio",
+                                        "http://radyoland.radyotvonline.com/radyoland/danceland/icecast.audio"};
 
+    private int index = 0;
     /**
      * Radio Manager initialization
      */
     RadioManager mRadioManager = RadioManager.with(this);
 
-    Button mButtonControl;
+    Button mButtonControlStart;
+    Button mButtonControlStop;
     TextView mTextViewControl;
 
     @Override
@@ -35,6 +38,7 @@ public class MainActivity extends Activity implements RadioListener {
          * Listeners will be notified.
          */
         mRadioManager.registerListener(this);
+        mRadioManager.setLogging(true);
 
         /**
          * initialize layout widgets to play, pause radio.
@@ -44,16 +48,21 @@ public class MainActivity extends Activity implements RadioListener {
     }
 
     public void initializeUI(){
-        mButtonControl = (Button) findViewById(R.id.buttonControl);
+        mButtonControlStart = (Button) findViewById(R.id.buttonControlStart);
+        mButtonControlStop = (Button) findViewById(R.id.buttonControlStop);
         mTextViewControl = (TextView) findViewById(R.id.textviewControl);
 
-        mButtonControl.setOnClickListener(new View.OnClickListener() {
+        mButtonControlStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!mRadioManager.isPlaying())
-                    mRadioManager.startRadio(RADIO_URL);
-                else
-                    mRadioManager.stopRadio();
+                    mRadioManager.startRadio(RADIO_URL[index]);
+            }
+        });
+
+        mButtonControlStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRadioManager.stopRadio();
             }
         });
     }

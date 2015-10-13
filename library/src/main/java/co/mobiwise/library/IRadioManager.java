@@ -15,6 +15,8 @@ public interface IRadioManager {
 
     void unregisterListener(RadioListener mRadioListener);
 
+    void setLogging(boolean logging);
+
     void connect();
 
     void disconnect();

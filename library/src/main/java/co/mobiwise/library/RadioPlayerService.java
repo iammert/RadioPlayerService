@@ -23,6 +23,8 @@ import java.util.List;
  */
 public class RadioPlayerService extends Service implements PlayerCallback {
 
+    private static boolean isLogging = false;
+
     /**
      * Radio buffer and decode capacity(DEFAULT VALUES)
      */
@@ -133,12 +135,15 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     public void play(String mRadioUrl){
 
         this.mRadioUrl = mRadioUrl;
+        isSwitching = false;
 
         if(isPlaying()){
+            log("Switching Radio");
             isSwitching = true;
             stop();
         }
         else if(!mLock){
+            log("Play requested.");
             mLock = true;
             getPlayer().playAsync(mRadioUrl);
         }
@@ -147,6 +152,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
 
     public void stop(){
         if(!mLock){
+            log("Stop requested.");
             mLock = true;
             getPlayer().stop();
         }
@@ -157,6 +163,8 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         mRadioState = State.PLAYING;
         mLock = false;
         notifyRadioStarted();
+
+        log("Player started. State : " + mRadioState);
 
         if(isInterrupted)
             isInterrupted = false;
@@ -178,13 +186,17 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         mRadioState = State.STOPPED;
         mLock = false;
         notifyRadioStopped();
+        log("Player started. State : " + mRadioState);
 
         if(isSwitching)
             play(mRadioUrl);
+
+
     }
 
     @Override
     public void playerException(Throwable throwable) {
+        log("ERROR OCCURED.");
         //Empty
     }
 
@@ -286,5 +298,14 @@ public class RadioPlayerService extends Service implements PlayerCallback {
             super.onCallStateChanged(state, incomingNumber);
         }
     };
+
+    public void setLogging(boolean logging){
+        isLogging = logging;
+    }
+
+    private void log(String log){
+        if(isLogging)
+            Log.v("RadioManager","RadioPlayerService : " + log);
+    }
 
 }

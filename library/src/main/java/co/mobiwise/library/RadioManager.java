@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
  * Created by mertsimsek on 03/07/15.
  */
 public class RadioManager implements IRadioManager{
+
+    private static boolean isLogging = false;
 
     private static RadioManager instance = null;
 
@@ -48,6 +51,7 @@ public class RadioManager implements IRadioManager{
 
     @Override
     public boolean isPlaying() {
+        log("IsPlaying : " + mService.isPlaying());
         return mService.isPlaying();
     }
 
@@ -61,17 +65,25 @@ public class RadioManager implements IRadioManager{
 
     @Override
     public void unregisterListener(RadioListener mRadioListener) {
+        log("Register unregistered.");
         mService.unregisterListener(mRadioListener);
     }
 
     @Override
+    public void setLogging(boolean logging) {
+        isLogging = logging;
+    }
+
+    @Override
     public void connect() {
+        log("Requested to connect service.");
         Intent intent = new Intent(mContext, RadioPlayerService.class);
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void disconnect() {
+        log("Service Disconnected.");
         mContext.unbindService(mServiceConnection);
     }
 
@@ -79,7 +91,11 @@ public class RadioManager implements IRadioManager{
 
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder binder) {
+
+            log("Service Connected.");
+
             mService = ((RadioPlayerService.LocalBinder) binder).getService();
+            mService.setLogging(isLogging);
             isServiceConnected = true;
 
             if(!mRadioListenerQueue.isEmpty()){
@@ -97,4 +113,9 @@ public class RadioManager implements IRadioManager{
         }
 
     };
+
+    private void log(String log){
+        if(isLogging)
+            Log.v("RadioManager","RadioManagerLog : " + log);
+    }
 }
