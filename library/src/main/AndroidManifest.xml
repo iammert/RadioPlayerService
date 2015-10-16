@@ -1,11 +1,21 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="co.mobiwise.library">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="co.mobiwise.library">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
-    <application android:allowBackup="true" android:label="@string/app_name">
+  <application
+    android:allowBackup="true"
+    android:label="@string/app_name">
 
-        <service android:name=".RadioPlayerService"/>
-    </application>
+    <service android:name=".RadioPlayerService"/>
+    <receiver
+      android:name=".RadioPlayerBroadcastReceiver">
+      <intent-filter>
+        <action android:name="co.mobiwise.library.stop"/>
+        <action android:name="co.mobiwise.library.togglepause"/>
+      </intent-filter>
+    </receiver>
+  </application>
 
 </manifest>
