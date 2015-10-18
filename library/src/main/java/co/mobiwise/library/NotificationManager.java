@@ -41,9 +41,14 @@ public class NotificationManager extends BroadcastReceiver {
   }
 
   public void startNotification(String radioName, String trackInformation, int artImage) {
+    Bitmap bitmapIcon = BitmapFactory.decodeResource(mService.getApplicationContext().getResources(), artImage);
+    startNotification(radioName, trackInformation, bitmapIcon);
+  }
+
+
+  public void startNotification(String radioName, String trackInformation, Bitmap artImage) {
     if (!mStarted) {
-      Bitmap bitmapIcon = BitmapFactory.decodeResource(mService.getApplicationContext().getResources(), artImage);
-      mNotification = createNotification(radioName, trackInformation, bitmapIcon);
+      mNotification = createNotification(radioName, trackInformation, artImage);
       if (mNotification != null) {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_PLAY_PAUSE);
@@ -141,13 +146,12 @@ public class NotificationManager extends BroadcastReceiver {
 
     mCancelIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
         new Intent(ACTION_CANCEL).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
-    mExpandedView.setOnClickPendingIntent(R.id
-            .notification_collapse, mCancelIntent);
+    mExpandedView.setOnClickPendingIntent(R.id.notification_collapse, mCancelIntent);
 
     mPlayIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
         new Intent(ACTION_PLAY_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
     mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_play,
-            mPlayIntent);
+        mPlayIntent);
 
     // Cancel all notifications to handle the case where the Service was killed and
     // restarted by the system.
@@ -164,7 +168,6 @@ public class NotificationManager extends BroadcastReceiver {
     mPlayIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
         new Intent(ACTION_PLAY_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
     mNotificationTemplate.setOnClickPendingIntent(R.id.notification_play, mPlayIntent);
-
     // Cancel all notifications to handle the case where the Service was killed and
     // restarted by the system.
     mNotificationManager.cancelAll();
@@ -191,18 +194,15 @@ public class NotificationManager extends BroadcastReceiver {
     mNotificationManager.notify(NOTIFICATION_ID, mNotification);
   }
 
-  public void updateNotificationMediaData(String radioName, String trackInformation, int artImage) {
+  public void updateNotificationMediaData(String radioName, String trackInformation, Bitmap artImage) {
     if (mNotificationTemplate == null || mNotificationManager == null) {
       return;
     }
-
-    Bitmap bitmapIcon = BitmapFactory.decodeResource(mService.getApplicationContext().getResources(), artImage);
-
     mNotificationTemplate.setTextViewText(R.id.notification_line_one,
         radioName);
     mNotificationTemplate.setTextViewText(R.id.notification_line_two,
         trackInformation);
-    mNotificationTemplate.setImageViewBitmap(R.id.notification_image, bitmapIcon);
+    mNotificationTemplate.setImageViewBitmap(R.id.notification_image, artImage);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       mExpandedView.setTextViewText(R.id.notification_line_one,
@@ -210,12 +210,18 @@ public class NotificationManager extends BroadcastReceiver {
       mExpandedView.setTextViewText(R.id.notification_line_two,
           trackInformation);
       mExpandedView.setImageViewBitmap(R.id.notification_image,
-              bitmapIcon);
+          artImage);
     }
     mNotificationManager.notify(NOTIFICATION_ID, mNotification);
   }
 
-  public boolean isStarted(){
+  public void updateNotificationMediaData(String radioName, String trackInformation, int artImage) {
+    Bitmap bitmapIcon = BitmapFactory.decodeResource(mService.getApplicationContext().getResources(), artImage);
+    updateNotificationMediaData(radioName, trackInformation, bitmapIcon);
+  }
+
+
+  public boolean isStarted() {
     return mStarted;
   }
 

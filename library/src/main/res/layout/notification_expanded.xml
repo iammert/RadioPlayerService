@@ -34,8 +34,8 @@
       android:layout_weight="1"
       android:background="?android:selectableItemBackground"
       android:padding="@dimen/notification_expanded_button_padding"
-      android:scaleType="fitCenter"
-      android:src="@drawable/btn_playback_play"/>
+      android:src="@drawable/btn_playback_pause"
+      android:scaleType="fitCenter"/>
 
   </LinearLayout>
 

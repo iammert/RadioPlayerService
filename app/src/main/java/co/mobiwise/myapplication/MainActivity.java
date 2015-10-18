@@ -1,8 +1,6 @@
 package co.mobiwise.myapplication;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +15,7 @@ public class MainActivity extends Activity implements RadioListener {
   /**
    * Example radio stream URL
    */
-  private final String[] RADIO_URL = {"http://radyoland.radyotvonline.com/radyoland/akustikland/icecast.audio",
+  private final String[] RADIO_URL = {"http://radyoland.radyotvonline.com/radyoland/danceland/icecast.audio",
       "http://radyoland.radyotvonline.com/radyoland/danceland/icecast.audio"};
 
   private int index = 0;
@@ -40,7 +38,6 @@ public class MainActivity extends Activity implements RadioListener {
      */
     mRadioManager.registerListener(this);
     mRadioManager.setLogging(true);
-
     /**
      * initialize layout widgets to play, pause radio.
      */
@@ -55,7 +52,7 @@ public class MainActivity extends Activity implements RadioListener {
     mButtonControlStart.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        if(!mRadioManager.isPlaying())
+        if (!mRadioManager.isPlaying())
           mRadioManager.startRadio(RADIO_URL[index]);
         else
           mRadioManager.stopRadio();

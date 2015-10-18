@@ -52,7 +52,6 @@
   </LinearLayout>
 
   <ImageView
-    android:src="@drawable/btn_playback_play"
     android:id="@+id/notification_play"
     style="@style/NotificationAction.Play"/>
 
