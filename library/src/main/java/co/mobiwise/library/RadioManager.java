@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -117,5 +118,15 @@ public class RadioManager implements IRadioManager{
     private void log(String log){
         if(isLogging)
             Log.v("RadioManager","RadioManagerLog : " + log);
+    }
+
+    @Override
+    public void startNotification(String radioName, String trackInformation, Bitmap bitmapIcon) {
+        mService.buildNotification(radioName, trackInformation, bitmapIcon);
+    }
+
+    @Override
+    public void updateNotificationMetadata(String radioName, String trackInformation, Bitmap bitmapIcon) {
+        mService.updateNotificationMetadata(radioName, trackInformation, bitmapIcon);
     }
 }

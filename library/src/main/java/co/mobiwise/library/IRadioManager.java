@@ -1,5 +1,7 @@
 package co.mobiwise.library;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by mertsimsek on 03/07/15.
  */
@@ -20,4 +22,8 @@ public interface IRadioManager {
     void connect();
 
     void disconnect();
+
+    void startNotification(String radioName, String trackInformation, Bitmap bitmapIcon);
+
+    void updateNotificationMetadata(String radioName, String trackInformation, Bitmap bitmapIcon);
 }

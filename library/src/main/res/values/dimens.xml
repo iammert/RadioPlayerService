@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Notification template -->
+  <dimen name="notification_big_icon_height">64dp</dimen>
+  <dimen name="notification_big_icon_width">64dp</dimen>
+  <dimen name="notification_info_container_padding_left">8dp</dimen>
+  <dimen name="notification_info_container_padding_bottom">4dp</dimen>
+  <dimen name="notification_action_padding">8dp</dimen>
+  <dimen name="notification_action_height">48dp</dimen>
+  <dimen name="notification_action_width">48dp</dimen>
+
+  <!-- Notification template expanded -->
+  <dimen name="notification_expanded_height">128dp</dimen>
+  <dimen name="notification_expanded_buttons_divider_padding">12dp</dimen>
+  <dimen name="notification_expanded_button_height">48dp</dimen>
+  <dimen name="notification_expanded_button_padding">10dp</dimen>
+  <dimen name="notification_expanded_content_padding_top">8dp</dimen>
+  <dimen name="notification_expanded_collapse_padding">8dp</dimen>
+</resources>

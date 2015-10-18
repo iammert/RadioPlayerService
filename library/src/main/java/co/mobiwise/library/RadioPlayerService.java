@@ -2,6 +2,7 @@ package co.mobiwise.library;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioTrack;
 import android.os.Binder;
 import android.os.IBinder;
@@ -94,6 +95,11 @@ public class RadioPlayerService extends Service implements PlayerCallback {
      */
     public final IBinder mLocalBinder = new LocalBinder();
 
+    /**
+     * NotificationManager instance
+     */
+    private NotificationManager mNotificationManager;
+
     @Override
     public IBinder onBind(Intent intent) {
         return mLocalBinder;
@@ -126,6 +132,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         if(mTelephonyManager != null) {
             mTelephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
         }
+        mNotificationManager = new NotificationManager(this);
     }
 
     /**
@@ -306,6 +313,44 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     private void log(String log){
         if(isLogging)
             Log.v("RadioManager","RadioPlayerService : " + log);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mNotificationManager.stopNotification();
+    }
+
+    /**
+     * NOTIFICATION
+     */
+
+    /**
+     * method that builds notification and shows track information also.
+     */
+    public void buildNotification(String radioName, String trackInformation, Bitmap bitmapIcon) {
+        mNotificationManager.startNotification(radioName, trackInformation, bitmapIcon);
+    }
+
+    /**
+     * method that controls music service from notification.
+     */
+    public void playFromNotification() {
+        play(mRadioUrl);
+    }
+
+    /**
+     * method that update notification and shows track information also.
+     */
+    public void updateNotificationMetadata(String radioName, String trackInformation, Bitmap bitmapIcon) {
+        mNotificationManager.updateNotificationMediaData(radioName, trackInformation, bitmapIcon);
+    }
+
+    /**
+     * stop notification
+     */
+    public void stopNotification() {
+        mNotificationManager.stopNotification();
     }
 
 }
