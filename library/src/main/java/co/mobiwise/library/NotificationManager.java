@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 public class NotificationManager extends BroadcastReceiver {
@@ -19,8 +18,6 @@ public class NotificationManager extends BroadcastReceiver {
 
   public static final String ACTION_CANCEL = "co.mobiwise.library.cancel";
   public static final String ACTION_PLAY_PAUSE = "co.mobiwise.library.play_pause";
-  public static final String ACTION_PREV = "co.mobiwise.library.prev";
-  public static final String ACTION_NEXT = "co.mobiwise.library.next";
 
   private final RadioPlayerService mService;
 
@@ -28,11 +25,8 @@ public class NotificationManager extends BroadcastReceiver {
 
   private PendingIntent mCancelIntent;
   private PendingIntent mPlayIntent;
-  private PendingIntent mPreviousIntent;
-  private PendingIntent mNextIntent;
 
   private RemoteViews mNotificationTemplate;
-
   private RemoteViews mExpandedView;
 
   private boolean mStarted = false;
@@ -50,9 +44,7 @@ public class NotificationManager extends BroadcastReceiver {
       mNotification = createNotification(radioName, trackInformation, bitmapIcon);
       if (mNotification != null) {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_NEXT);
         filter.addAction(ACTION_PLAY_PAUSE);
-        filter.addAction(ACTION_PREV);
         filter.addAction(ACTION_CANCEL);
         mService.registerReceiver(this, filter);
 
@@ -95,12 +87,6 @@ public class NotificationManager extends BroadcastReceiver {
         }
         setPlayPauseActionView(mService.isPlaying());
         break;
-      case ACTION_NEXT:
-        Log.v("TAG", "ACTION_NEXT");
-        break;
-      case ACTION_PREV:
-        Log.v("TAG", "ACTION_PREV");
-        break;
     }
   }
 
@@ -125,6 +111,7 @@ public class NotificationManager extends BroadcastReceiver {
             setSmallIcon(android.R.drawable.sym_def_app_icon)
             .setContentIntent(getPendingIntent())
             .setPriority(Notification.PRIORITY_DEFAULT).setContent(mNotificationTemplate)
+            .setUsesChronometer(true)
             .build();
 
     setPlaybackActions();
@@ -158,16 +145,6 @@ public class NotificationManager extends BroadcastReceiver {
         new Intent(ACTION_PLAY_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
     mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_play,
         mPlayIntent);
-
-    mPreviousIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
-        new Intent(ACTION_PREV).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
-    mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_previous,
-        mPreviousIntent);
-
-    mNextIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
-        new Intent(ACTION_NEXT).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
-    mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_next,
-        mNextIntent);
 
     // Cancel all notifications to handle the case where the Service was killed and
     // restarted by the system.

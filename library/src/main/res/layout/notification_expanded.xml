@@ -27,17 +27,6 @@
     android:orientation="horizontal"
     android:showDividers="middle">
 
-
-    <ImageView
-      android:id="@+id/notification_expanded_previous"
-      android:layout_width="0dp"
-      android:layout_height="@dimen/notification_expanded_button_height"
-      android:layout_weight="1"
-      android:background="?android:selectableItemBackground"
-      android:padding="@dimen/notification_expanded_button_padding"
-      android:scaleType="fitCenter"
-      android:src="@drawable/btn_playback_previous"/>
-
     <ImageView
       android:id="@+id/notification_expanded_play"
       android:layout_width="0dp"
@@ -47,16 +36,6 @@
       android:padding="@dimen/notification_expanded_button_padding"
       android:scaleType="fitCenter"
       android:src="@drawable/btn_playback_play"/>
-
-    <ImageView
-      android:id="@+id/notification_expanded_next"
-      android:layout_width="0dp"
-      android:layout_height="@dimen/notification_expanded_button_height"
-      android:layout_weight="1"
-      android:background="?android:selectableItemBackground"
-      android:padding="@dimen/notification_expanded_button_padding"
-      android:scaleType="fitCenter"
-      android:src="@drawable/btn_playback_next"/>
 
   </LinearLayout>
 

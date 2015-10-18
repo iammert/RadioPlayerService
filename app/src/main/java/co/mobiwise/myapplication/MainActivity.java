@@ -1,8 +1,6 @@
 package co.mobiwise.myapplication;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -48,7 +46,6 @@ public class MainActivity extends Activity implements RadioListener {
   }
 
   public void initializeUI() {
-    final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.btn_playback_next);
     mButtonControl = (Button) findViewById(R.id.buttonControl);
     mTextViewControl = (TextView) findViewById(R.id.textviewControl);
 
@@ -57,7 +54,7 @@ public class MainActivity extends Activity implements RadioListener {
       public void onClick(View v) {
         if (!mRadioManager.isPlaying()) {
           mRadioManager.startRadio(RADIO_URL);
-          mRadioManager.startNotification("radioName", "trackInformation",icon);
+          // mRadioManager.startNotification();
         } else {
           mRadioManager.stopRadio();
         }
