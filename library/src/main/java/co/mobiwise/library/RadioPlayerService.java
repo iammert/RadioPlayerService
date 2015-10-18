@@ -91,6 +91,12 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     private boolean mLock;
 
     /**
+     * Notification will be shown if this
+     * value set true;
+     */
+    private boolean isNotificationEnabled = true;
+
+    /**
      * Binder
      */
     public final IBinder mLocalBinder = new LocalBinder();
@@ -175,6 +181,9 @@ public class RadioPlayerService extends Service implements PlayerCallback {
 
         if(isInterrupted)
             isInterrupted = false;
+
+        if(isNotificationEnabled)
+            updateNotificationMetadata("Playing","", R.drawable.default_art);
     }
 
     public boolean isPlaying(){
@@ -328,8 +337,8 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     /**
      * method that builds notification and shows track information also.
      */
-    public void buildNotification(String radioName, String trackInformation, Bitmap bitmapIcon) {
-        mNotificationManager.startNotification(radioName, trackInformation, bitmapIcon);
+    public void buildNotification(String radioName, String trackInformation, int artImage) {
+        mNotificationManager.startNotification(radioName, trackInformation, artImage);
     }
 
     /**
@@ -342,8 +351,12 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     /**
      * method that update notification and shows track information also.
      */
-    public void updateNotificationMetadata(String radioName, String trackInformation, Bitmap bitmapIcon) {
-        mNotificationManager.updateNotificationMediaData(radioName, trackInformation, bitmapIcon);
+    public void updateNotificationMetadata(String radioName, String trackInformation, int artImage) {
+
+        if(!mNotificationManager.isStarted())
+            buildNotification(radioName, trackInformation, artImage);
+        else
+            mNotificationManager.updateNotificationMediaData(radioName, trackInformation, artImage);
     }
 
     /**
@@ -353,4 +366,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         mNotificationManager.stopNotification();
     }
 
+    public void enableNotification(boolean isEnabled){
+        isNotificationEnabled = isEnabled;
+    }
 }

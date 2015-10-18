@@ -27,7 +27,6 @@ public class MainActivity extends Activity implements RadioListener {
   RadioManager mRadioManager = RadioManager.with(this);
 
   Button mButtonControlStart;
-  Button mButtonControlStop;
   TextView mTextViewControl;
 
   @Override
@@ -50,27 +49,19 @@ public class MainActivity extends Activity implements RadioListener {
   }
 
   public void initializeUI() {
-    final Bitmap icon = BitmapFactory.decodeResource(getResources(),
-        R.drawable.btn_playback_play);
     mButtonControlStart = (Button) findViewById(R.id.buttonControlStart);
-    mButtonControlStop = (Button) findViewById(R.id.buttonControlStop);
     mTextViewControl = (TextView) findViewById(R.id.textviewControl);
 
     mButtonControlStart.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        mRadioManager.startRadio(RADIO_URL[index]);
-        mRadioManager.startNotification("RadioName",
-            "TrackInformation", icon);
+        if(!mRadioManager.isPlaying())
+          mRadioManager.startRadio(RADIO_URL[index]);
+        else
+          mRadioManager.stopRadio();
       }
     });
 
-    mButtonControlStop.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mRadioManager.stopRadio();
-      }
-    });
   }
 
   @Override

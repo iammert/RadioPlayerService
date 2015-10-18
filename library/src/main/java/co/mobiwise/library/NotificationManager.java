@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.widget.RemoteViews;
 
@@ -39,8 +40,9 @@ public class NotificationManager extends BroadcastReceiver {
         .getSystemService(Context.NOTIFICATION_SERVICE);
   }
 
-  public void startNotification(String radioName, String trackInformation, Bitmap bitmapIcon) {
+  public void startNotification(String radioName, String trackInformation, int artImage) {
     if (!mStarted) {
+      Bitmap bitmapIcon = BitmapFactory.decodeResource(mService.getApplicationContext().getResources(), artImage);
       mNotification = createNotification(radioName, trackInformation, bitmapIcon);
       if (mNotification != null) {
         IntentFilter filter = new IntentFilter();
@@ -129,6 +131,7 @@ public class NotificationManager extends BroadcastReceiver {
           bitmapIcon);
       setExpandedPlaybackActions();
     }
+
     return notification;
   }
 
@@ -139,12 +142,12 @@ public class NotificationManager extends BroadcastReceiver {
     mCancelIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
         new Intent(ACTION_CANCEL).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
     mExpandedView.setOnClickPendingIntent(R.id
-        .notification_collapse, mCancelIntent);
+            .notification_collapse, mCancelIntent);
 
     mPlayIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
         new Intent(ACTION_PLAY_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
     mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_play,
-        mPlayIntent);
+            mPlayIntent);
 
     // Cancel all notifications to handle the case where the Service was killed and
     // restarted by the system.
@@ -188,11 +191,13 @@ public class NotificationManager extends BroadcastReceiver {
     mNotificationManager.notify(NOTIFICATION_ID, mNotification);
   }
 
-  public void updateNotificationMediaData(String radioName, String
-      trackInformation, Bitmap bitmapIcon) {
+  public void updateNotificationMediaData(String radioName, String trackInformation, int artImage) {
     if (mNotificationTemplate == null || mNotificationManager == null) {
       return;
     }
+
+    Bitmap bitmapIcon = BitmapFactory.decodeResource(mService.getApplicationContext().getResources(), artImage);
+
     mNotificationTemplate.setTextViewText(R.id.notification_line_one,
         radioName);
     mNotificationTemplate.setTextViewText(R.id.notification_line_two,
@@ -205,9 +210,14 @@ public class NotificationManager extends BroadcastReceiver {
       mExpandedView.setTextViewText(R.id.notification_line_two,
           trackInformation);
       mExpandedView.setImageViewBitmap(R.id.notification_image,
-          bitmapIcon);
+              bitmapIcon);
     }
     mNotificationManager.notify(NOTIFICATION_ID, mNotification);
   }
+
+  public boolean isStarted(){
+    return mStarted;
+  }
+
 
 }
