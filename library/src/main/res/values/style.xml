@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Notification bar event text -->
+  <style name="NotificationText">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:ellipsize">end</item>
+    <item name="android:fadingEdge">horizontal</item>
+    <item name="android:singleLine">true</item>
+    <item name="android:layout_margin">8dp</item>
+    <item name="android:color">#ffffff</item>
+  </style>
+
+  <!-- Notification bar actions -->
+  <style name="NotificationAction">
+    <item name="android:layout_width">@dimen/notification_action_width</item>
+    <item name="android:layout_height">@dimen/notification_action_height</item>
+    <item name="android:gravity">center|right</item>
+    <item name="android:scaleType">fitCenter</item>
+    <item name="android:padding">@dimen/notification_action_padding</item>
+    <item name="android:background">?android:selectableItemBackground</item>
+  </style>
+
+  <style name="NotificationAction.Previous" parent="@style/NotificationAction">
+    <item name="android:visibility">gone</item>
+  </style>
+
+  <style name="NotificationAction.Play" parent="@style/NotificationAction">
+  </style>
+
+  <style name="NotificationAction.Next" parent="@style/NotificationAction">
+  </style>
+
+  <style name="NotificationAction.Collapse" parent="@style/NotificationAction">
+  </style>
+
+</resources>

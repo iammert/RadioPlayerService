@@ -28,5 +28,5 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':library')
-    //compile 'com.github.iammert:RadioPlayerService:4ab6bafbbf'
+    //compile 'com.github.iammert:RadioPlayerService:9a0cc8dc94'
 }
