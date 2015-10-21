@@ -15,8 +15,7 @@ public class MainActivity extends Activity implements RadioListener {
   /**
    * Example radio stream URL
    */
-  private final String[] RADIO_URL = {"http://radyoland.radyotvonline.com/radyoland/danceland/icecast.audio",
-      "http://radyoland.radyotvonline.com/radyoland/danceland/icecast.audio"};
+  private final String[] RADIO_URL = {"http://hayatmix.net/;yayin.mp3.m3u"};
 
   private int index = 0;
   /**

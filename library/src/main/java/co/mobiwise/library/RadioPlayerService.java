@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.AudioTrack;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
@@ -22,368 +23,399 @@ import java.util.List;
  */
 public class RadioPlayerService extends Service implements PlayerCallback {
 
-  private static boolean isLogging = false;
+    private static boolean isLogging = false;
 
-  /**
-   * Radio buffer and decode capacity(DEFAULT VALUES)
-   */
-  private final int AUDIO_BUFFER_CAPACITY_MS = 800;
-  private final int AUDIO_DECODE_CAPACITY_MS = 400;
+    /**
+     * Radio buffer and decode capacity(DEFAULT VALUES)
+     */
+    private final int AUDIO_BUFFER_CAPACITY_MS = 800;
+    private final int AUDIO_DECODE_CAPACITY_MS = 400;
 
-  /**
-   * Listeners will be notified depends on these codes.
-   */
-  private final int NOTIFY_RADIO_STARTED = 0;
-  private final int NOTIFY_RADIO_STOPPED = 1;
-  private final int NOTIFY_METADATA_CHANGED = 2;
+    /**
+     * Listeners will be notified depends on these codes.
+     */
+    private final int NOTIFY_RADIO_STARTED = 0;
+    private final int NOTIFY_RADIO_STOPPED = 1;
+    private final int NOTIFY_METADATA_CHANGED = 2;
 
-  /**
-   * State enum for Radio Player state (IDLE, PLAYING, STOPPED, INTERRUPTED)
-   */
-  public enum State {
-    IDLE,
-    PLAYING,
-    STOPPED,
-  }
+    /**
+     * Stream url suffix
+     *
+     */
+    private final String SUFFIX_PLS = ".pls";
+    private final String SUFFIX_RAM = ".ram";
+    private final String SUFFIX_WAX = ".wax";
 
-  ;
-
-  List<RadioListener> mListenerList;
-
-  /**
-   * Radio State
-   */
-  private State mRadioState;
-
-  /**
-   * Current radio URL
-   */
-  private String mRadioUrl;
-
-  /**
-   * AAC Radio Player
-   */
-  private MultiPlayer mRadioPlayer;
-
-  /**
-   * Will be controlled on incoming calls and stop and start player.
-   */
-  private TelephonyManager mTelephonyManager;
-
-  /**
-   * While current radio playing, if you give another play command with different
-   * source, you need to stop it first. This value is responsible for control
-   * after radio stopped.
-   */
-  private boolean isSwitching;
-
-  /**
-   * Incoming calls interrupt radio if it is playing.
-   * Check if this is true or not after hang up;
-   */
-  private boolean isInterrupted;
-
-  /**
-   * If play method is called repeatedly, AAC Decoder will be failed.
-   * play and stop methods will be turned mLock = true when they called,
-   *
-   * @onRadioStarted and @onRadioStopped methods will be release lock.
-   */
-  private boolean mLock;
-
-  /**
-   * Notification will be shown if this
-   * value set true;
-   */
-  private boolean isNotificationEnabled = true;
-
-  /**
-   * Binder
-   */
-  public final IBinder mLocalBinder = new LocalBinder();
-
-  /**
-   * NotificationManager instance
-   */
-  private NotificationManager mNotificationManager;
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return mLocalBinder;
-  }
-
-  public class LocalBinder extends Binder {
-    public RadioPlayerService getService() {
-      return RadioPlayerService.this;
-    }
-  }
-
-  @Override
-  public int onStartCommand(Intent intent, int flags, int startId) {
-    return START_NOT_STICKY;
-  }
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-
-    mListenerList = new ArrayList<>();
-
-    mRadioState = State.IDLE;
-    isSwitching = false;
-    isInterrupted = false;
-    mLock = false;
-    getPlayer();
-
-    mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-    if (mTelephonyManager != null) {
-      mTelephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
-    }
-    mNotificationManager = new NotificationManager(this);
-  }
-
-  /**
-   * Play url if different from previous streaming url.
-   *
-   * @param mRadioUrl
-   */
-  public void play(String mRadioUrl) {
-
-    this.mRadioUrl = mRadioUrl;
-    isSwitching = false;
-
-    if (isPlaying()) {
-      log("Switching Radio");
-      isSwitching = true;
-      stop();
-    } else if (!mLock) {
-      log("Play requested.");
-      mLock = true;
-      getPlayer().playAsync(mRadioUrl);
+    /**
+     * State enum for Radio Player state (IDLE, PLAYING, STOPPED, INTERRUPTED)
+     */
+    public enum State {
+        IDLE,
+        PLAYING,
+        STOPPED,
     }
 
-  }
+    ;
 
-  public void stop() {
-    if (!mLock) {
-      log("Stop requested.");
-      mLock = true;
-      getPlayer().stop();
-    }
-  }
+    List<RadioListener> mListenerList;
 
-  @Override
-  public void playerStarted() {
-    mRadioState = State.PLAYING;
-    mLock = false;
-    notifyRadioStarted();
+    /**
+     * Radio State
+     */
+    private State mRadioState;
 
-    log("Player started. State : " + mRadioState);
+    /**
+     * Current radio URL
+     */
+    private String mRadioUrl;
 
-    if (isInterrupted)
-      isInterrupted = false;
+    /**
+     * AAC Radio Player
+     */
+    private MultiPlayer mRadioPlayer;
 
-    if (isNotificationEnabled)
-      updateNotificationMetadata("Playing", "", R.drawable.default_art);
-  }
+    /**
+     * Will be controlled on incoming calls and stop and start player.
+     */
+    private TelephonyManager mTelephonyManager;
 
-  public boolean isPlaying() {
-    if (State.PLAYING == mRadioState)
-      return true;
-    return false;
-  }
+    /**
+     * While current radio playing, if you give another play command with different
+     * source, you need to stop it first. This value is responsible for control
+     * after radio stopped.
+     */
+    private boolean isSwitching;
 
-  @Override
-  public void playerPCMFeedBuffer(boolean b, int i, int i1) {
-    //Empty
-  }
+    /**
+     * Incoming calls interrupt radio if it is playing.
+     * Check if this is true or not after hang up;
+     */
+    private boolean isInterrupted;
 
-  @Override
-  public void playerStopped(int i) {
-    mRadioState = State.STOPPED;
-    mLock = false;
-    notifyRadioStopped();
-    log("Player started. State : " + mRadioState);
+    /**
+     * If play method is called repeatedly, AAC Decoder will be failed.
+     * play and stop methods will be turned mLock = true when they called,
+     *
+     * @onRadioStarted and @onRadioStopped methods will be release lock.
+     */
+    private boolean mLock;
 
-    if (isSwitching)
-      play(mRadioUrl);
+    /**
+     * Notification will be shown if this
+     * value set true;
+     */
+    private boolean isNotificationEnabled = true;
 
+    /**
+     * Binder
+     */
+    public final IBinder mLocalBinder = new LocalBinder();
 
-  }
+    /**
+     * NotificationManager instance
+     */
+    private NotificationManager mNotificationManager;
 
-  @Override
-  public void playerException(Throwable throwable) {
-    log("ERROR OCCURED.");
-    //Empty
-  }
-
-  @Override
-  public void playerMetadata(String s, String s2) {
-    notifyMetaDataChanged(s, s2);
-  }
-
-  @Override
-  public void playerAudioTrackCreated(AudioTrack audioTrack) {
-    //Empty
-  }
-
-  public void registerListener(RadioListener mListener) {
-    mListenerList.add(mListener);
-  }
-
-  public void unregisterListener(RadioListener mListener) {
-    mListenerList.remove(mListener);
-  }
-
-  private void notifyRadioStarted() {
-    for (RadioListener mRadioListener : mListenerList) {
-      mRadioListener.onRadioStarted();
-    }
-
-  }
-
-  private void notifyRadioStopped() {
-    for (RadioListener mRadioListener : mListenerList)
-      mRadioListener.onRadioStopped();
-  }
-
-  private void notifyMetaDataChanged(String s, String s2) {
-
-    for (RadioListener mRadioListener : mListenerList)
-      mRadioListener.onMetaDataReceived(s, s2);
-  }
-
-  /**
-   * Return AAC player. If it is not initialized, creates and returns.
-   *
-   * @return MultiPlayer
-   */
-  private MultiPlayer getPlayer() {
-    try {
-
-      java.net.URL.setURLStreamHandlerFactory(new java.net.URLStreamHandlerFactory() {
-
-        public java.net.URLStreamHandler createURLStreamHandler(String protocol) {
-          Log.d("LOG", "Asking for stream handler for protocol: '" + protocol + "'");
-          if ("icy".equals(protocol))
-            return new com.spoledge.aacdecoder.IcyURLStreamHandler();
-          return null;
-        }
-      });
-    } catch (Throwable t) {
-      Log.w("LOG", "Cannot set the ICY URLStreamHandler - maybe already set ? - " + t);
-    }
-
-    if (mRadioPlayer == null) {
-      mRadioPlayer = new MultiPlayer(this, AUDIO_BUFFER_CAPACITY_MS, AUDIO_DECODE_CAPACITY_MS);
-      mRadioPlayer.setResponseCodeCheckEnabled(false);
-    }
-    return mRadioPlayer;
-  }
-
-  PhoneStateListener phoneStateListener = new PhoneStateListener() {
     @Override
-    public void onCallStateChanged(int state, String incomingNumber) {
-      if (state == TelephonyManager.CALL_STATE_RINGING) {
-
-        /**
-         * Stop radio and set interrupted if it is playing on incoming call.
-         */
-        if (isPlaying()) {
-          isInterrupted = true;
-          stop();
-        }
-
-      } else if (state == TelephonyManager.CALL_STATE_IDLE) {
-
-        /**
-         * Keep playing if it is interrupted.
-         */
-        if (isInterrupted)
-          play(mRadioUrl);
-
-      } else if (state == TelephonyManager.CALL_STATE_OFFHOOK) {
-
-        /**
-         * Stop radio and set interrupted if it is playing on outgoing call.
-         */
-        if (isPlaying()) {
-          isInterrupted = true;
-          stop();
-        }
-
-      }
-      super.onCallStateChanged(state, incomingNumber);
+    public IBinder onBind(Intent intent) {
+        return mLocalBinder;
     }
-  };
 
-  public void setLogging(boolean logging) {
-    isLogging = logging;
-  }
+    public class LocalBinder extends Binder {
+        public RadioPlayerService getService() {
+            return RadioPlayerService.this;
+        }
+    }
 
-  private void log(String log) {
-    if (isLogging)
-      Log.v("RadioManager", "RadioPlayerService : " + log);
-  }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
+    }
 
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    mNotificationManager.stopNotification();
-  }
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-  /**
-   * NOTIFICATION
-   */
+        mListenerList = new ArrayList<>();
 
-  /**
-   * method that builds notification and shows track information also.
-   */
-  public void buildNotification(String radioName, String trackInformation, int artImage) {
-    mNotificationManager.startNotification(radioName, trackInformation, artImage);
-  }
+        mRadioState = State.IDLE;
+        isSwitching = false;
+        isInterrupted = false;
+        mLock = false;
+        getPlayer();
 
-  public void buildNotification(String radioName, String trackInformation, Bitmap artImage) {
-    mNotificationManager.startNotification(radioName, trackInformation, artImage);
-  }
+        mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        if (mTelephonyManager != null) {
+            mTelephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        }
+        mNotificationManager = new NotificationManager(this);
+    }
 
-  /**
-   * method that controls music service from notification.
-   */
-  public void playFromNotification() {
-    play(mRadioUrl);
-  }
+    /**
+     * Play url if different from previous streaming url.
+     *
+     * @param mRadioUrl
+     */
+    public void play(String mRadioUrl) {
 
-  /**
-   * method that update notification and shows track information also.
-   */
-  public void updateNotificationMetadata(String radioName, String trackInformation, int artImage) {
+        if(checkSuffix(mRadioUrl))
+            decodeStremLink(mRadioUrl);
+        else{
+            this.mRadioUrl = mRadioUrl;
+            isSwitching = false;
 
-    if (!mNotificationManager.isStarted())
-      buildNotification(radioName, trackInformation, artImage);
-    else
-      mNotificationManager.updateNotificationMediaData(radioName, trackInformation, artImage);
-  }
+            if (isPlaying()) {
+                log("Switching Radio");
+                isSwitching = true;
+                stop();
+            } else if (!mLock) {
+                log("Play requested.");
+                mLock = true;
+                getPlayer().playAsync(mRadioUrl);
+            }
+        }
+    }
 
-  /**
-   * method that update notification and shows track information also.
-   */
-  public void updateNotificationMetadata(String radioName, String trackInformation, Bitmap artImage) {
+    public void stop() {
+        if (!mLock) {
+            log("Stop requested.");
+            mLock = true;
+            getPlayer().stop();
+        }
+    }
 
-    if (!mNotificationManager.isStarted())
-      buildNotification(radioName, trackInformation, artImage);
-    else
-      mNotificationManager.updateNotificationMediaData(radioName, trackInformation, artImage);
-  }
+    @Override
+    public void playerStarted() {
+        mRadioState = State.PLAYING;
+        mLock = false;
+        notifyRadioStarted();
 
-  /**
-   * stop notification
-   */
-  public void stopNotification() {
-    mNotificationManager.stopNotification();
-  }
+        log("Player started. State : " + mRadioState);
 
-  public void enableNotification(boolean isEnabled) {
-    isNotificationEnabled = isEnabled;
-  }
+        if (isInterrupted)
+            isInterrupted = false;
+
+        if (isNotificationEnabled)
+            updateNotificationMetadata("Playing", "", R.drawable.default_art);
+    }
+
+    public boolean isPlaying() {
+        if (State.PLAYING == mRadioState)
+            return true;
+        return false;
+    }
+
+    @Override
+    public void playerPCMFeedBuffer(boolean b, int i, int i1) {
+        //Empty
+    }
+
+    @Override
+    public void playerStopped(int i) {
+        mRadioState = State.STOPPED;
+        mLock = false;
+        notifyRadioStopped();
+        log("Player started. State : " + mRadioState);
+
+        if (isSwitching)
+            play(mRadioUrl);
+
+
+    }
+
+    @Override
+    public void playerException(Throwable throwable) {
+        mLock = false;
+        log("ERROR OCCURED.");
+    }
+
+    @Override
+    public void playerMetadata(String s, String s2) {
+        notifyMetaDataChanged(s, s2);
+    }
+
+    @Override
+    public void playerAudioTrackCreated(AudioTrack audioTrack) {
+        //Empty
+    }
+
+    public void registerListener(RadioListener mListener) {
+        mListenerList.add(mListener);
+    }
+
+    public void unregisterListener(RadioListener mListener) {
+        mListenerList.remove(mListener);
+    }
+
+    private void notifyRadioStarted() {
+        for (RadioListener mRadioListener : mListenerList) {
+            mRadioListener.onRadioStarted();
+        }
+
+    }
+
+    private void notifyRadioStopped() {
+        for (RadioListener mRadioListener : mListenerList)
+            mRadioListener.onRadioStopped();
+    }
+
+    private void notifyMetaDataChanged(String s, String s2) {
+
+        for (RadioListener mRadioListener : mListenerList)
+            mRadioListener.onMetaDataReceived(s, s2);
+    }
+
+    /**
+     * Return AAC player. If it is not initialized, creates and returns.
+     *
+     * @return MultiPlayer
+     */
+    private MultiPlayer getPlayer() {
+        try {
+
+            java.net.URL.setURLStreamHandlerFactory(new java.net.URLStreamHandlerFactory() {
+
+                public java.net.URLStreamHandler createURLStreamHandler(String protocol) {
+                    Log.d("LOG", "Asking for stream handler for protocol: '" + protocol + "'");
+                    if ("icy".equals(protocol))
+                        return new com.spoledge.aacdecoder.IcyURLStreamHandler();
+                    return null;
+                }
+            });
+        } catch (Throwable t) {
+            Log.w("LOG", "Cannot set the ICY URLStreamHandler - maybe already set ? - " + t);
+        }
+
+        if (mRadioPlayer == null) {
+            mRadioPlayer = new MultiPlayer(this, AUDIO_BUFFER_CAPACITY_MS, AUDIO_DECODE_CAPACITY_MS);
+            mRadioPlayer.setResponseCodeCheckEnabled(false);
+            mRadioPlayer.setPlayerCallback(this);
+        }
+        return mRadioPlayer;
+    }
+
+    PhoneStateListener phoneStateListener = new PhoneStateListener() {
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+            if (state == TelephonyManager.CALL_STATE_RINGING) {
+
+                /**
+                 * Stop radio and set interrupted if it is playing on incoming call.
+                 */
+                if (isPlaying()) {
+                    isInterrupted = true;
+                    stop();
+                }
+
+            } else if (state == TelephonyManager.CALL_STATE_IDLE) {
+
+                /**
+                 * Keep playing if it is interrupted.
+                 */
+                if (isInterrupted)
+                    play(mRadioUrl);
+
+            } else if (state == TelephonyManager.CALL_STATE_OFFHOOK) {
+
+                /**
+                 * Stop radio and set interrupted if it is playing on outgoing call.
+                 */
+                if (isPlaying()) {
+                    isInterrupted = true;
+                    stop();
+                }
+
+            }
+            super.onCallStateChanged(state, incomingNumber);
+        }
+    };
+
+    public boolean checkSuffix(String streamUrl){
+        if (    streamUrl.contains(SUFFIX_PLS) ||
+                streamUrl.contains(SUFFIX_RAM) ||
+                streamUrl.contains(SUFFIX_WAX))
+            return true;
+        else
+            return false;
+    }
+
+    public void setLogging(boolean logging) {
+        isLogging = logging;
+    }
+
+    private void log(String log) {
+        if (isLogging)
+            Log.v("RadioManager", "RadioPlayerService : " + log);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mNotificationManager.stopNotification();
+    }
+
+    private void decodeStremLink(String streamLink){
+        new StreamLinkDecoder(streamLink){
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                play(s);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * NOTIFICATION
+     */
+
+    /**
+     * method that builds notification and shows track information also.
+     */
+    public void buildNotification(String radioName, String trackInformation, int artImage) {
+        mNotificationManager.startNotification(radioName, trackInformation, artImage);
+    }
+
+    public void buildNotification(String radioName, String trackInformation, Bitmap artImage) {
+        mNotificationManager.startNotification(radioName, trackInformation, artImage);
+    }
+
+    /**
+     * method that controls music service from notification.
+     */
+    public void playFromNotification() {
+        play(mRadioUrl);
+    }
+
+    /**
+     * method that update notification and shows track information also.
+     */
+    public void updateNotificationMetadata(String radioName, String trackInformation, int artImage) {
+
+        if (!mNotificationManager.isStarted())
+            buildNotification(radioName, trackInformation, artImage);
+        else
+            mNotificationManager.updateNotificationMediaData(radioName, trackInformation, artImage);
+    }
+
+    /**
+     * method that update notification and shows track information also.
+     */
+    public void updateNotificationMetadata(String radioName, String trackInformation, Bitmap artImage) {
+
+        if (!mNotificationManager.isStarted())
+            buildNotification(radioName, trackInformation, artImage);
+        else
+            mNotificationManager.updateNotificationMediaData(radioName, trackInformation, artImage);
+    }
+
+    /**
+     * stop notification
+     */
+    public void stopNotification() {
+        mNotificationManager.stopNotification();
+    }
+
+    public void enableNotification(boolean isEnabled) {
+        isNotificationEnabled = isEnabled;
+    }
 }
