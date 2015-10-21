@@ -7,6 +7,24 @@ Android service library which uses AAC Player. Ready to use Radio Player Service
 - Play and stop live radio streams on background.
 - Handle incoming and outgoing calls.
 
+## Supported URLs
+
+- http://xxxx:1232
+- http://xxxx/abc.pls
+- http://xxxx/abc.ram
+- http://xxxx/abc.wax
+- http://xxxx/abc.m4a
+- http://xxxx/abc.mp3
+
+## Unsupported URLs (yet)
+
+- rtmp://xxxx
+- http://xxxx/abc.aspx
+- http://xxxx/abc.php
+- http://xxxx/abc.html
+- mms://xxxx
+
+
 # Usage #
 
 ## Gradle ##
@@ -34,6 +52,11 @@ RadioManager mRadioManager = RadioManager.with(this);
 ```java
 //Invoke it #onCreate
 mRadioManager.registerListener(this);
+```
+```java
+//Enables notification or you can disable it 
+//giving "false" parameter
+mRadioManager.enableNotification(true);
 ```
 ```java
 //Invoke it #onStart
@@ -85,14 +108,13 @@ RadioManager.with(getActivity()).unregisterListener(this);
 ```
 
 
-
-
 Demo project will help you to understand implementation.
 
 ## TODO LIST##
 
-* [ ] Create Notification on Background Service.
+* [x] Create Notification on Background Service.
 * [ ] Decode and Buffer size setter methods
+* [ ] Decode .php, .html, .aspx web page and inspect supported stream urls if exists.
 
 ## Libraries Used ##
 
