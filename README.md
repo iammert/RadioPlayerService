@@ -18,6 +18,9 @@ Android service library which uses AAC Player. Ready to use Radio Player Service
 
 ## Unsupported URLs (yet)
 
+NOTE : Some of below urls might have embedded player inside webpage. We can inspect page and check if it has any url
+which is supported by this library. I will try to do that next commits.
+
 - rtmp://xxxx
 - http://xxxx/abc.aspx
 - http://xxxx/abc.php
