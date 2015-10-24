@@ -225,7 +225,7 @@ public class RadioPlayerService extends IntentService implements PlayerCallback 
         mRadioState = State.STOPPED;
         mLock = false;
         notifyRadioStopped();
-        log("Player started. State : " + mRadioState);
+        log("Player stopped. State : " + mRadioState);
 
         if (isSwitching)
             play(mRadioUrl);
