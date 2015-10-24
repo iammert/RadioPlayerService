@@ -1,6 +1,6 @@
 package co.mobiwise.library;
 
-import android.app.Service;
+import android.app.IntentService;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.AudioTrack;
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by mertsimsek on 01/07/15.
  */
-public class RadioPlayerService extends Service implements PlayerCallback {
+public class RadioPlayerService extends IntentService implements PlayerCallback {
 
     private static boolean isLogging = false;
 
@@ -54,8 +54,6 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         PLAYING,
         STOPPED,
     }
-
-    ;
 
     List<RadioListener> mListenerList;
 
@@ -116,9 +114,21 @@ public class RadioPlayerService extends Service implements PlayerCallback {
      */
     private NotificationManager mNotificationManager;
 
+    /**
+     * Creates an IntentService.  Invoked by your subclass's constructor.
+     */
+    public RadioPlayerService() {
+        super(RadioPlayerService.class.getName());
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return mLocalBinder;
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+
     }
 
     public class LocalBinder extends Binder {
@@ -226,6 +236,8 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     @Override
     public void playerException(Throwable throwable) {
         mLock = false;
+        mRadioPlayer = null;
+        getPlayer();
         log("ERROR OCCURED.");
     }
 
