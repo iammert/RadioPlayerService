@@ -7,7 +7,7 @@
     <item name="android:ellipsize">end</item>
     <item name="android:fadingEdge">horizontal</item>
     <item name="android:singleLine">true</item>
-    <item name="android:layout_margin">8dp</item>
+    <item name="android:layout_margin">2dp</item>
     <item name="android:color">#ffffff</item>
   </style>
 

@@ -1,4 +1,5 @@
-package co.mobiwise.library;
+package co.mobiwise.library.radio;
+
 
 import android.graphics.Bitmap;
 
@@ -23,10 +24,8 @@ public interface IRadioManager {
 
     void disconnect();
 
-    void updateNotification(String textHeader, String textSub, int artImage);
+    void updateNotification(String singerName, String songName, int smallArt, int bigArt);
 
-    void updateNotification(String textHeader, String textSub, Bitmap artImage);
-
-    void enableNotification(boolean isEnabled);
+    void updateNotification(String singerName, String songName, int smallArt, Bitmap bigArt);
 
 }

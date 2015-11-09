@@ -1,4 +1,4 @@
-package co.mobiwise.library;
+package co.mobiwise.library.radio;
 
 import android.os.AsyncTask;
 
@@ -13,13 +13,31 @@ import java.net.URLConnection;
  */
 public class StreamLinkDecoder extends AsyncTask<Void, Void, String> {
 
+    /**
+     * Stream url
+     */
     String streamUrl;
+
+    /**
+     * ResponseBuild for @streamUrl
+     */
     StringBuilder response;
 
+    /**
+     * Constructor
+     * @param streamUrl
+     */
     public StreamLinkDecoder(String streamUrl) {
         this.streamUrl = streamUrl;
     }
 
+    /**
+     * DoInBackground method will create a connection
+     * to stream link and check the file if there is
+     * http stream link inside that file.
+     * @param params
+     * @return http stream link
+     */
     @Override
     protected String doInBackground(Void... params) {
         try {

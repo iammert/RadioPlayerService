@@ -1,4 +1,4 @@
-package co.mobiwise.library;
+package co.mobiwise.library.radio;
 
 /**
  * Created by mertsimsek on 01/07/15.

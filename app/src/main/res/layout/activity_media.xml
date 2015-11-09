@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"/>
+
+    <Button
+        android:id="@+id/buttoncontrol"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="start/stop"/>
+
+    <Button
+        android:id="@+id/buttonNext"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="NextRadio"/>
+
+    <TextView
+        android:id="@+id/textstatus"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="STATUS : IDLE"
+        android:gravity="center"/>
+    
+</LinearLayout>
