@@ -361,6 +361,7 @@ public class MediaPlayerService extends Service implements
                 .setContent(mNotificationTemplate)
                 .setUsesChronometer(true)
                 .build();
+        notification.flags = Notification.FLAG_ONGOING_EVENT;
 
         /**
          * Expanded notification

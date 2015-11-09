@@ -516,6 +516,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
                 .setContent(mNotificationTemplate)
                 .setUsesChronometer(true)
                 .build();
+        notification.flags = Notification.FLAG_ONGOING_EVENT;
 
         /**
          * Expanded notification
