@@ -5,6 +5,8 @@ package co.mobiwise.library.radio;
  */
 public interface RadioListener {
 
+  void onRadioLoading();
+
   void onRadioConnected();
 
   void onRadioStarted();

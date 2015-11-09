@@ -62,6 +62,17 @@ public class RadioActivity extends Activity implements RadioListener{
     }
 
     @Override
+    public void onRadioLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //TODO Do UI works here.
+                mTextViewControl.setText("RADIO STATE : LOADING...");
+            }
+        });
+    }
+
+    @Override
     public void onRadioConnected() {
 
     }
