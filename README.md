@@ -113,6 +113,10 @@ RadioManager.with(getActivity()).unregisterListener(this);
 
 Demo project will help you to understand implementation.
 
+## Error Case Solutions ##
+If you get UnsatisfiedLinkError on some android devices, please go through the [link](https://medium.com/mobiwise-blog/unsatisfiedlinkerror-problem-on-some-android-devices-b77f2f83837d#.c1vlmowal) that I explained how to solve it.
+
+
 ## TODO LIST##
 
 * [x] Create Notification on Background Service.
