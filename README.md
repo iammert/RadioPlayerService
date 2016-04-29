@@ -41,7 +41,7 @@ repositories {
 
 ```
 dependencies {
-    compile 'com.github.thedude61636:4a942a4'
+    compile 'com.github.thedude61636:1.5'
 }
 ```
 
