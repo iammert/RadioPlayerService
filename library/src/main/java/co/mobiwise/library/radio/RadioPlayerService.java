@@ -1,7 +1,7 @@
 package co.mobiwise.library.radio;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -12,10 +12,11 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.spoledge.aacdecoder.MultiPlayer;
 import com.spoledge.aacdecoder.PlayerCallback;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.mobiwise.library.R;
+import co.mobiwise.library.radio.RadioListener;
+import co.mobiwise.library.radio.StreamLinkDecoder;
 
 
 /**
@@ -138,7 +141,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     /**
      * Notification manager
      */
-    private NotificationManager mNotificationManager;
+    private NotificationManagerCompat notificationManagerCompat;
 
     /**
      * Binder
@@ -181,8 +184,8 @@ public class RadioPlayerService extends Service implements PlayerCallback {
                 isClosedFromNotification = true;
                 stop();
             }
-            if (mNotificationManager != null)
-                mNotificationManager.cancel(NOTIFICATION_ID);
+            if (notificationManagerCompat != null)
+                notificationManagerCompat.cancel(NOTIFICATION_ID);
         }
         /**
          * If play/pause action clicked on notification,
@@ -212,7 +215,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         getPlayer();
 
         mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManagerCompat = NotificationManagerCompat.from(this);
 
         if (mTelephonyManager != null)
             mTelephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
@@ -353,7 +356,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         }
     }
 
-    private void notifyErrorOccured(){
+    private void notifyErrorOccured() {
         for (RadioListener mRadioListener : mListenerList) {
             mRadioListener.onError();
         }
@@ -499,8 +502,8 @@ public class RadioPlayerService extends Service implements PlayerCallback {
          * Remote view for normal view
          */
 
-        RemoteViews mNotificationTemplate = new RemoteViews(this.getPackageName(), R.layout.notification);
-        Notification.Builder notificationBuilder = new Notification.Builder(this);
+
+        NotificationCompat.Builder notificationCompatBuilder = new NotificationCompat.Builder(this);
 
         /**
          * set small notification texts and image
@@ -508,50 +511,40 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         if (artImage == null)
             artImage = BitmapFactory.decodeResource(getResources(), R.drawable.default_art);
 
-        mNotificationTemplate.setTextViewText(R.id.notification_line_one, singerName);
-        mNotificationTemplate.setTextViewText(R.id.notification_line_two, songName);
-        mNotificationTemplate.setImageViewResource(R.id.notification_play, isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
-        mNotificationTemplate.setImageViewBitmap(R.id.notification_image, artImage);
-
-        /**
-         * OnClickPending intent for collapsed notification
-         */
-        mNotificationTemplate.setOnClickPendingIntent(R.id.notification_collapse, cancelPending);
-        mNotificationTemplate.setOnClickPendingIntent(R.id.notification_play, playPausePending);
-
 
         /**
          * Create notification instance
          */
-        Notification notification = notificationBuilder
+
+        notificationCompatBuilder
                 .setSmallIcon(smallImage)
+                .setLargeIcon(artImage)
+                .setContentTitle(songName)
+                .setContentText(singerName)
                 .setContentIntent(openPending)
-                .setPriority(Notification.PRIORITY_DEFAULT)
-                .setContent(mNotificationTemplate)
-                .setUsesChronometer(true)
-                .build();
-        notification.flags = Notification.FLAG_ONGOING_EVENT;
+                .setOngoing(true)
+                .setWhen(0)
+                .addAction(isPlaying() ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play, isPlaying() ? getResources().getString(R.string.pause) : getResources().getString(R.string.play), playPausePending)
+                .setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(0));
+
+        applyLollipopFunctionality(notificationCompatBuilder);
+
 
         /**
          * Expanded notification
          */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 
-            RemoteViews mExpandedView = new RemoteViews(this.getPackageName(), R.layout.notification_expanded);
+        if (notificationManagerCompat != null)
+            notificationManagerCompat.notify(NOTIFICATION_ID, notificationCompatBuilder.build());
+    }
 
-            mExpandedView.setTextViewText(R.id.notification_line_one, singerName);
-            mExpandedView.setTextViewText(R.id.notification_line_two, songName);
-            mExpandedView.setImageViewResource(R.id.notification_expanded_play, isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
-            mExpandedView.setImageViewBitmap(R.id.notification_image, artImage);
-
-            mExpandedView.setOnClickPendingIntent(R.id.notification_collapse, cancelPending);
-            mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_play, playPausePending);
-
-            notification.bigContentView = mExpandedView;
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void applyLollipopFunctionality(NotificationCompat.Builder notificationCompatBuilder) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notificationCompatBuilder
+                    .setCategory(Notification.CATEGORY_TRANSPORT)
+                    .setVisibility(Notification.VISIBILITY_PUBLIC);
         }
-
-        if (mNotificationManager != null)
-            mNotificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     public void updateNotification(String singerName, String songName, int smallImage, int artImage) {
