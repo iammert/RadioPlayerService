@@ -522,7 +522,6 @@ public class RadioPlayerService extends Service implements PlayerCallback {
                 .setContentTitle(songName)
                 .setContentText(singerName)
                 .setContentIntent(openPending)
-                .setOngoing(true)
                 .setWhen(0)
                 .addAction(isPlaying() ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play, isPlaying() ? getResources().getString(R.string.pause) : getResources().getString(R.string.play), playPausePending)
                 .setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(0));
