@@ -69,6 +69,10 @@ mRadioManager.connect();
 //Invoke it #onDestroy
 mRadioManager.disconnect();
 ```
+```java
+//Cancel notification and stop the player
+mRadioManager.cancelNotification();
+```
 
 Play and pause radio like 
 ```java
