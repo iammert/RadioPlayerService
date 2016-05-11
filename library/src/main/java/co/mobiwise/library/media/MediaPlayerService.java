@@ -1,7 +1,7 @@
 package co.mobiwise.library.media;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -14,7 +14,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
-import android.widget.RemoteViews;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.NotificationCompat;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import co.mobiwise.library.R;
 public class MediaPlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnSeekCompleteListener,
-        MediaPlayer.OnCompletionListener{
+        MediaPlayer.OnCompletionListener {
 
 
     /**
@@ -81,7 +82,8 @@ public class MediaPlayerService extends Service implements
     /**
      * Notification manager
      */
-    private NotificationManager mNotificationManager;
+    private NotificationManagerCompat notificationManagerCompat;
+
 
     /**
      * Stop action. If another radioplayer will start.It needs
@@ -133,13 +135,10 @@ public class MediaPlayerService extends Service implements
 
         String action = intent.getAction();
 
-        if(action.equals(NOTIFICATION_INTENT_CANCEL)){
-            if(isPlaying())
-                stop();
-            mNotificationManager.cancel(NOTIFICATION_ID);
-        }
-        else if(action.equals(NOTIFICATION_INTENT_PLAY_PAUSE)){
-            if(isPlaying())
+        if (action.equals(NOTIFICATION_INTENT_CANCEL)) {
+            cancelNotification();
+        } else if (action.equals(NOTIFICATION_INTENT_PLAY_PAUSE)) {
+            if (isPlaying())
                 pause();
             else
                 play(mStreamURL);
@@ -149,6 +148,7 @@ public class MediaPlayerService extends Service implements
         return START_NOT_STICKY;
     }
 
+
     /**
      * OnCreate
      */
@@ -156,7 +156,7 @@ public class MediaPlayerService extends Service implements
     public void onCreate() {
         super.onCreate();
 
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManagerCompat = NotificationManagerCompat.from(this);
         mediaListenerList = new ArrayList<>();
         initializeMediaPlayer();
     }
@@ -245,6 +245,7 @@ public class MediaPlayerService extends Service implements
 
     /**
      * Called when mediaplayer prepared to play
+     *
      * @param mp
      */
     @Override
@@ -256,6 +257,7 @@ public class MediaPlayerService extends Service implements
 
     /**
      * Seek completed
+     *
      * @param mp
      */
     @Override
@@ -266,6 +268,7 @@ public class MediaPlayerService extends Service implements
 
     /**
      * End of file
+     *
      * @param mp
      */
     @Override
@@ -310,7 +313,7 @@ public class MediaPlayerService extends Service implements
     /**
      * Build notification
      */
-    private void buildNotification(){
+    private void buildNotification() {
 
         /**
          * Intents
@@ -322,82 +325,79 @@ public class MediaPlayerService extends Service implements
         /**
          * Pending intents
          */
-        PendingIntent playPausePending = PendingIntent.getService(this,0,intentPlayPause,0);
-        PendingIntent openPending = PendingIntent.getService(this,0,intentOpenPlayer,0);
-        PendingIntent cancelPending = PendingIntent.getService(this,0,intentCancel,0);
+        PendingIntent playPausePending = PendingIntent.getService(this, 0, intentPlayPause, 0);
+        PendingIntent openPending = PendingIntent.getService(this, 0, intentOpenPlayer, 0);
+        PendingIntent cancelPending = PendingIntent.getService(this, 0, intentCancel, 0);
 
         /**
          * Remote view for normal view
          */
 
-        RemoteViews mNotificationTemplate = new RemoteViews(this.getPackageName(), R.layout.notification);
-        Notification.Builder notificationBuilder = new Notification.Builder(this);
+        NotificationCompat.Builder notificationCompatBuilder = new NotificationCompat.Builder(this);
 
         /**
          * set small notification texts and image
          */
-        if(artImage == null)
-            artImage = BitmapFactory.decodeResource(getResources(),R.drawable.default_art);
-
-        mNotificationTemplate.setTextViewText(R.id.notification_line_one, singerName);
-        mNotificationTemplate.setTextViewText(R.id.notification_line_two, songName);
-        mNotificationTemplate.setImageViewResource(R.id.notification_play, isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
-        mNotificationTemplate.setImageViewBitmap(R.id.notification_image, artImage);
-
-        /**
-         * OnClickPending intent for collapsed notification
-         */
-        mNotificationTemplate.setOnClickPendingIntent(R.id.notification_collapse, cancelPending);
-        mNotificationTemplate.setOnClickPendingIntent(R.id.notification_play, playPausePending);
+        if (artImage == null)
+            artImage = BitmapFactory.decodeResource(getResources(), R.drawable.default_art);
 
 
         /**
          * Create notification instance
          */
-        Notification notification = notificationBuilder
+        notificationCompatBuilder
                 .setSmallIcon(smallImage)
+                .setLargeIcon(artImage)
+                .setContentTitle(songName)
+                .setContentText(singerName)
                 .setContentIntent(openPending)
-                .setPriority(Notification.PRIORITY_DEFAULT)
-                .setContent(mNotificationTemplate)
-                .setUsesChronometer(true)
-                .build();
-        notification.flags = Notification.FLAG_ONGOING_EVENT;
+                .setDeleteIntent(cancelPending)
+                .setOngoing(isPlaying())
+                .setWhen(0)
+                .addAction(isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play_arrow, isPlaying() ? getResources().getString(R.string.pause) : getResources().getString(R.string.play), playPausePending)
+                .setStyle(new NotificationCompat.MediaStyle().setShowActionsInCompactView(0))
+        ;
+
 
         /**
          * Expanded notification
          */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        applyLollipopFunctionality(notificationCompatBuilder);
 
-            RemoteViews mExpandedView = new RemoteViews(this.getPackageName(),R.layout.notification_expanded);
-
-            mExpandedView.setTextViewText(R.id.notification_line_one, singerName);
-            mExpandedView.setTextViewText(R.id.notification_line_two, songName);
-            mExpandedView.setImageViewResource(R.id.notification_expanded_play, isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
-            mExpandedView.setImageViewBitmap(R.id.notification_image, artImage);
-
-            mExpandedView.setOnClickPendingIntent(R.id.notification_collapse, cancelPending);
-            mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_play, playPausePending);
-
-            notification.bigContentView = mExpandedView;
-        }
-
-        if(mNotificationManager != null)
-            mNotificationManager.notify(NOTIFICATION_ID, notification);
+        if (notificationManagerCompat != null)
+            notificationManagerCompat.notify(NOTIFICATION_ID, notificationCompatBuilder.build());
     }
 
-    public void updateNotification(String singerName, String songName, int smallImage, int artImage){
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void applyLollipopFunctionality(NotificationCompat.Builder notificationCompatBuilder) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notificationCompatBuilder
+                    .setCategory(Notification.CATEGORY_TRANSPORT)
+                    .setVisibility(Notification.VISIBILITY_PUBLIC);
+        }
+    }
+
+    public void updateNotification(String singerName, String songName, int smallImage, int artImage) {
         this.singerName = singerName;
         this.songName = songName;
         this.smallImage = smallImage;
-        this.artImage = BitmapFactory.decodeResource(getResources(),artImage);
+        this.artImage = BitmapFactory.decodeResource(getResources(), artImage);
         buildNotification();
     }
 
-    public void updateNotification(String singerName, String songName, int smallImage, Bitmap artImage){
+    public void updateNotification(String singerName, String songName, int smallImage, Bitmap artImage) {
         this.singerName = singerName;
         this.songName = songName;
         this.smallImage = smallImage;
         this.artImage = artImage;
         buildNotification();
     }
+
+    public void cancelNotification() {
+        if (isPlaying())
+            stop();
+        notificationManagerCompat.cancel(NOTIFICATION_ID);
+
+    }
+
 }
