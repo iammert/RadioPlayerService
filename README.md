@@ -1,5 +1,5 @@
 # RadioPlayerService
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-RadioPlayerService-green.svg?style=flat)](http://android-arsenal.com/details/1/2168)
+
 
 Android service library which uses AAC Player. Ready to use Radio Player Service. (Android Background Player Service)
 
