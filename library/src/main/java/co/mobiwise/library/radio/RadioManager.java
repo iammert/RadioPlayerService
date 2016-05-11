@@ -47,7 +47,40 @@ public class RadioManager implements IRadioManager {
     private boolean isServiceConnected;
 
     /**
+     * notification enabled/disabled control
+     */
+    private boolean isEnabled = true;
+    /**
+     * Connection
+     */
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName arg0, IBinder binder) {
+
+            log("Service Connected.");
+
+            mService = ((RadioPlayerService.LocalBinder) binder).getService();
+            mService.setLogging(isLogging);
+            isServiceConnected = true;
+            mService.enableNotification(isEnabled);
+
+            if (!mRadioListenerQueue.isEmpty()) {
+                for (RadioListener mRadioListener : mRadioListenerQueue) {
+                    registerListener(mRadioListener);
+                    mRadioListener.onRadioConnected();
+                }
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
+
+    /**
      * Private constructor because of Singleton pattern
+     *
      * @param mContext
      */
     private RadioManager(Context mContext) {
@@ -58,6 +91,7 @@ public class RadioManager implements IRadioManager {
 
     /**
      * Singleton
+     *
      * @param mContext
      * @return
      */
@@ -69,14 +103,16 @@ public class RadioManager implements IRadioManager {
 
     /**
      * get current service instance
+     *
      * @return RadioPlayerService
      */
-    public static RadioPlayerService getService(){
+    public static RadioPlayerService getService() {
         return mService;
     }
 
     /**
      * Start Radio Streaming
+     *
      * @param streamURL
      */
     @Override
@@ -94,6 +130,7 @@ public class RadioManager implements IRadioManager {
 
     /**
      * Check if radio is playing
+     *
      * @return
      */
     @Override
@@ -104,6 +141,7 @@ public class RadioManager implements IRadioManager {
 
     /**
      * Register listener to listen radio service actions
+     *
      * @param mRadioListener
      */
     @Override
@@ -116,6 +154,7 @@ public class RadioManager implements IRadioManager {
 
     /**
      * Unregister listeners
+     *
      * @param mRadioListener
      */
     @Override
@@ -126,6 +165,7 @@ public class RadioManager implements IRadioManager {
 
     /**
      * Set/Unset Logging
+     *
      * @param logging
      */
     @Override
@@ -154,6 +194,7 @@ public class RadioManager implements IRadioManager {
 
     /**
      * Update notification data
+     *
      * @param singerName
      * @param songName
      * @param smallArt
@@ -161,12 +202,13 @@ public class RadioManager implements IRadioManager {
      */
     @Override
     public void updateNotification(String singerName, String songName, int smallArt, int bigArt) {
-        if(mService != null)
+        if (mService != null && isEnabled)
             mService.updateNotification(singerName, songName, smallArt, bigArt);
     }
 
     /**
      * Update notification data
+     *
      * @param singerName
      * @param songName
      * @param smallArt
@@ -174,39 +216,23 @@ public class RadioManager implements IRadioManager {
      */
     @Override
     public void updateNotification(String singerName, String songName, int smallArt, Bitmap bigArt) {
-        if(mService != null)
+        if (mService != null && isEnabled)
             mService.updateNotification(singerName, songName, smallArt, bigArt);
     }
 
-    /**
-     * Connection
-     */
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
+    @Override
+    public void enableNotification(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
 
-        @Override
-        public void onServiceConnected(ComponentName arg0, IBinder binder) {
-
-            log("Service Connected.");
-
-            mService = ((RadioPlayerService.LocalBinder) binder).getService();
-            mService.setLogging(isLogging);
-            isServiceConnected = true;
-
-            if (!mRadioListenerQueue.isEmpty()) {
-                for (RadioListener mRadioListener : mRadioListenerQueue) {
-                    registerListener(mRadioListener);
-                    mRadioListener.onRadioConnected();
-                }
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
+    @Override
+    public void cancelNotification() {
+        mService.cancelNotification();
+    }
 
     /**
      * Logger
+     *
      * @param log
      */
     private void log(String log) {
