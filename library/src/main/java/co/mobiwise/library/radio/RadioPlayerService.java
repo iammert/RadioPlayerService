@@ -485,8 +485,13 @@ public class RadioPlayerService extends Service implements PlayerCallback {
          * Intents
          */
         Intent intentPlayPause = new Intent(NOTIFICATION_INTENT_PLAY_PAUSE);
-        Intent intentOpenPlayer = new Intent(NOTIFICATION_INTENT_OPEN_PLAYER);
         Intent intentCancel = new Intent(NOTIFICATION_INTENT_CANCEL);
+
+        /**
+         * Intent for opening the player by clicking at the notification
+         */
+        Intent intentOpenPlayer = new Intent(getPackageManager().getLaunchIntentForPackage(getPackageName()));
+        intentOpenPlayer.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         /**
          * Pending intents
