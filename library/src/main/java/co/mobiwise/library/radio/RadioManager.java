@@ -109,6 +109,20 @@ public class RadioManager implements IRadioManager {
   public static RadioPlayerService getService() {
     return mService;
   }
+  
+  /**
+   * Check if we are currectnly connected/bind to a service
+   */
+  public static boolean isConnected(){
+    return isServiceConnected;
+  }
+  
+  /**
+   * Resets the instance to 0 and requires re-initialization using with()
+   */
+  public void flush(){
+    instance = null;
+  }
 
   /**
    * Start Radio Streaming
