@@ -374,6 +374,13 @@ public class RadioPlayerService extends Service implements PlayerCallback {
       mRadioListener.onError();
     }
   }
+  
+  /**
+   * Return the radio url
+   */
+  public String getRadioUrl(){
+    return mRadioUrl;
+  }
 
   /**
    * Return AAC player. If it is not initialized, creates and returns.
