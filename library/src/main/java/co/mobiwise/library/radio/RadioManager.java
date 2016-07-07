@@ -113,14 +113,14 @@ public class RadioManager implements IRadioManager {
   /**
    * Check if we are currectnly connected/bind to a service
    */
-  public static boolean isConnected(){
+  public boolean isConnected(){
     return isServiceConnected;
   }
   
   /**
    * Resets the instance to 0 and requires re-initialization using with()
    */
-  public void flush(){
+  public static void flush(){
     instance = null;
   }
 
