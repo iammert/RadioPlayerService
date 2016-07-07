@@ -15,5 +15,7 @@ public interface RadioListener {
 
   void onMetaDataReceived(String s, String s2);
 
+  void onAudioSessionId(int audioSessionId);
+
   void onError();
 }
