@@ -305,6 +305,8 @@ public class RadioPlayerService extends Service implements PlayerCallback {
       }
     } else {
       isClosedFromNotification = false;
+
+      mNotificationManager.cancel(NOTIFICATION_ID);
     }
 
     mLock = false;
