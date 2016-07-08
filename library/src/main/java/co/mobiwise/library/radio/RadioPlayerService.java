@@ -198,11 +198,11 @@ public class RadioPlayerService extends Service implements PlayerCallback {
      * Check player state and stop/play streaming.
      */
     else if (action.equals(NOTIFICATION_INTENT_PLAY_PAUSE)) {
-      if (isPlaying())
-        stop();
-      else if (mRadioUrl != null)
-        play(mRadioUrl);
-
+      if (isPlaying()) {
+          stop();
+          mNotificationManager.cancel(NOTIFICATION_ID);
+      }  else if (mRadioUrl != null)
+          play(mRadioUrl);
     }
 
     return START_NOT_STICKY;
@@ -305,8 +305,6 @@ public class RadioPlayerService extends Service implements PlayerCallback {
       }
     } else {
       isClosedFromNotification = false;
-
-      mNotificationManager.cancel(NOTIFICATION_ID);
     }
 
     mLock = false;
