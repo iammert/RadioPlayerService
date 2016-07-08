@@ -190,8 +190,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         isClosedFromNotification = true;
         stop();
       }
-      if (mNotificationManager != null)
-        mNotificationManager.cancel(NOTIFICATION_ID);
+      cancelNotification();
     }
     /**
      * If play/pause action clicked on notification,
@@ -200,7 +199,6 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     else if (action.equals(NOTIFICATION_INTENT_PLAY_PAUSE)) {
       if (isPlaying()) {
           stop();
-          mNotificationManager.cancel(NOTIFICATION_ID);
       }  else if (mRadioUrl != null)
           play(mRadioUrl);
     }
@@ -538,6 +536,12 @@ public class RadioPlayerService extends Service implements PlayerCallback {
 
     if (mNotificationManager != null)
       mNotificationManager.notify(NOTIFICATION_ID, notification);
+  }
+
+  public void cancelNotification(){
+      if (mNotificationManager != null) {
+          mNotificationManager.cancel(NOTIFICATION_ID);
+      }
   }
 
   public void updateNotification(String singerName, String songName, int smallImage, int artImage) {
