@@ -1,5 +1,5 @@
 # RadioPlayerService
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-RadioPlayerService-green.svg?style=flat)](http://android-arsenal.com/details/1/2168)
+
 
 Android service library which uses AAC Player. Ready to use Radio Player Service. (Android Background Player Service)
 
@@ -41,7 +41,7 @@ repositories {
 
 ```
 dependencies {
-    compile 'com.github.iammert:RadioPlayerService:efe3b5420b'
+        compile 'com.github.thedude61636:RadioPlayerService:1.5'
 }
 ```
 
@@ -68,6 +68,10 @@ mRadioManager.connect();
 ```java
 //Invoke it #onDestroy
 mRadioManager.disconnect();
+```
+```java
+//Cancel notification and stop the player
+mRadioManager.cancelNotification();
 ```
 
 Play and pause radio like 
@@ -113,8 +117,6 @@ RadioManager.with(getActivity()).unregisterListener(this);
 
 Demo project will help you to understand implementation.
 
-## Error Case Solutions ##
-If you get UnsatisfiedLinkError on some android devices, please go through the [link](https://medium.com/mobiwise-blog/unsatisfiedlinkerror-problem-on-some-android-devices-b77f2f83837d#.c1vlmowal) that I explained how to solve it.
 
 
 ## TODO LIST##
