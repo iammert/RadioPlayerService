@@ -224,7 +224,6 @@ public class RadioPlayerService extends Service implements PlayerCallback {
     }
 
 
-
     /**
      * Play url if different from previous streaming url.
      *
@@ -538,6 +537,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         if (isNotificationEnabled)
             buildNotification();
     }
+
     public void cancelNotification() {
         if (isPlaying()) {
             isClosedFromNotification = true;
