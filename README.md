@@ -41,7 +41,7 @@ repositories {
 
 ```
 dependencies {
-    compile 'com.github.thedude61636:1.5'
+        compile 'com.github.thedude61636:RadioPlayerService:1.5'
 }
 ```
 
