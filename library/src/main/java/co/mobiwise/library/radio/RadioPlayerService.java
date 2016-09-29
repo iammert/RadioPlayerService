@@ -520,6 +520,26 @@ public class RadioPlayerService extends Service implements PlayerCallback {
         }
     }
 
+    public void updateNotification(String singerName, String songName) {
+        this.singerName = singerName;
+        this.songName = songName;
+        buildNotification();
+    }
+
+    public void updateNotification(String singerName, String songName, int smallImage) {
+        this.singerName = singerName;
+        this.songName = songName;
+        this.smallImage = smallImage;
+        buildNotification();
+    }
+
+    public void updateNotification(String singerName, String songName, Bitmap artImage) {
+        this.singerName = singerName;
+        this.songName = songName;
+        this.artImage = artImage;
+        buildNotification();
+    }
+
     public void updateNotification(String singerName, String songName, int smallImage, int artImage) {
         this.singerName = singerName;
         this.songName = songName;

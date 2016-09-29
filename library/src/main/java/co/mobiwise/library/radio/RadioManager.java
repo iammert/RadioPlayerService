@@ -192,6 +192,41 @@ public class RadioManager implements IRadioManager {
     mContext.unbindService(mServiceConnection);
   }
 
+    /**
+     * Update notification data
+     * @param singerName
+     * @param songName
+     */
+    @Override
+    public void updateNotification(String singerName, String songName) {
+        if(mService != null)
+            mService.updateNotification(singerName, songName);
+    }
+
+    /**
+     * Update notification data
+     * @param singerName
+     * @param songName
+     * @param smallArt
+     */
+    @Override
+    public void updateNotification(String singerName, String songName, int smallArt) {
+        if(mService != null)
+            mService.updateNotification(singerName, songName, smallArt);
+    }
+
+    /**
+     * Update notification data
+     * @param singerName
+     * @param songName
+     * @param bigArt
+     */
+    @Override
+    public void updateNotification(String singerName, String songName, Bitmap bigArt) {
+        if(mService != null)
+            mService.updateNotification(singerName, songName, bigArt);
+    }
+
   /**
    * Update notification data
    *

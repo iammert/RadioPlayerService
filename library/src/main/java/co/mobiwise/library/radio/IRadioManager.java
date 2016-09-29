@@ -24,6 +24,12 @@ public interface IRadioManager {
 
     void disconnect();
 
+    void updateNotification(String singerName, String songName);
+
+    void updateNotification(String singerName, String songName, int smallArt);
+
+    void updateNotification(String singerName, String songName, Bitmap bigArt);
+
     void updateNotification(String singerName, String songName, int smallArt, int bigArt);
 
     void updateNotification(String singerName, String songName, int smallArt, Bitmap bigArt);
