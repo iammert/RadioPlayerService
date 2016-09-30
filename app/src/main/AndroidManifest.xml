@@ -19,7 +19,6 @@
 
         <activity android:name=".MediaActivity"/>
         <activity android:name=".RadioActivity"/>
-
     </application>
 
 </manifest>

@@ -10,6 +10,13 @@
         android:allowBackup="true"
         android:label="@string/app_name">
 
+        <service android:name=".radio.RadioPlayerService">
+            <intent-filter>
+                <action android:name="co.mobiwise.library.notification.radio.INTENT_PLAYPAUSE"/>
+                <action android:name="co.mobiwise.library.notification.radio.INTENT_OPENPLAYER"/>
+                <action android:name="co.mobiwise.library.notification.radio.INTENT_CANCEL"/>
+            </intent-filter>
+        </service>
 
         <service android:name=".media.MediaPlayerService">
             <intent-filter>
@@ -19,19 +26,13 @@
             </intent-filter>
         </service>
 
-        <service android:name=".radio.RadioPlayerService">
-            <intent-filter>
-                <action android:name="co.mobiwise.library.notification.radio.INTENT_PLAYPAUSE"/>
-                <action android:name="co.mobiwise.library.notification.radio.INTENT_OPENPLAYER"/>
-                <action android:name="co.mobiwise.library.notification.radio.INTENT_CANCEL"/>
-            </intent-filter>
-        </service>
-
         <receiver android:name="co.mobiwise.library.broadcast.PlayerControllerBroadcast">
             <intent-filter>
                 <action android:name="co.mobiwise.library.ACTION_STOP_RADIOPLAYER"/>
                 <action android:name="co.mobiwise.library.ACTION_STOP_MEDIAPLAYER"/>
                 <action android:name="co.mobiwise.library.notification.radio.INTENT_OPENPLAYER"/>
+                <action android:name="co.mobiwise.library.notification.radio.INTENT_PLAYPAUSE"/>
+                <action android:name="co.mobiwise.library.notification.radio.INTENT_CANCEL"/>
             </intent-filter>
         </receiver>
 

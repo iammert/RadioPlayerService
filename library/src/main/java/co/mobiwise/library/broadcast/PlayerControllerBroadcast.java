@@ -43,6 +43,15 @@ public class PlayerControllerBroadcast extends BroadcastReceiver{
                 && isMediaServiceBinded
                 && MediaManager.getService().isPlaying()){
             MediaManager.getService().stop();
+        }else if(action.equals(RadioPlayerService.NOTIFICATION_INTENT_PLAY_PAUSE)
+                && isRadioServiceBinded){
+            if(RadioManager.getService().isPlaying())
+                RadioManager.getService().stop();
+            else
+                RadioManager.getService().resume();
+        }else if(action.equals(RadioPlayerService.NOTIFICATION_INTENT_CANCEL)
+                && isRadioServiceBinded){
+            RadioManager.getService().stopFromNotification();
         }
     }
 }
