@@ -2,6 +2,7 @@ package co.mobiwise.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,7 +15,7 @@ import co.mobiwise.library.radio.RadioManager;
  */
 public class RadioActivity extends Activity implements RadioListener{
 
-    private final String[] RADIO_URL = {"http://hayatmix.net/;yayin.mp3.m3u"};
+    private final String[] RADIO_URL = {"http://rockfm.rockfm.com.tr:9450"};
 
     Button mButtonControlStart;
     TextView mTextViewControl;
@@ -24,7 +25,6 @@ public class RadioActivity extends Activity implements RadioListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_radio);
-
 
         mRadioManager.registerListener(this);
         mRadioManager.setLogging(true);

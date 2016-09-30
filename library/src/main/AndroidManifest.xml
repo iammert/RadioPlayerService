@@ -31,6 +31,7 @@
             <intent-filter>
                 <action android:name="co.mobiwise.library.ACTION_STOP_RADIOPLAYER"/>
                 <action android:name="co.mobiwise.library.ACTION_STOP_MEDIAPLAYER"/>
+                <action android:name="co.mobiwise.library.notification.radio.INTENT_OPENPLAYER"/>
             </intent-filter>
         </receiver>
 

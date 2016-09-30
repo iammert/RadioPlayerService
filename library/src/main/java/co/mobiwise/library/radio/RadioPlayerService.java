@@ -492,7 +492,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
          * Pending intents
          */
         PendingIntent playPausePending = PendingIntent.getService(this, 0, intentPlayPause, 0);
-        PendingIntent openPending = PendingIntent.getService(this, 0, intentOpenPlayer, 0);
+        PendingIntent openPending = PendingIntent.getBroadcast(this, 31, intentOpenPlayer, 0);
         PendingIntent cancelPending = PendingIntent.getService(this, 0, intentCancel, 0);
 
         /**
@@ -518,7 +518,6 @@ public class RadioPlayerService extends Service implements PlayerCallback {
          */
         mNotificationTemplate.setOnClickPendingIntent(R.id.notification_collapse, cancelPending);
         mNotificationTemplate.setOnClickPendingIntent(R.id.notification_play, playPausePending);
-
 
         /**
          * Create notification instance

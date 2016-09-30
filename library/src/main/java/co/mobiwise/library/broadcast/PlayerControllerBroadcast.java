@@ -3,6 +3,7 @@ package co.mobiwise.library.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import co.mobiwise.library.media.MediaManager;
 import co.mobiwise.library.media.MediaPlayerService;
