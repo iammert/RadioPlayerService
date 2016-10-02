@@ -19,13 +19,14 @@ public class RadioActivity extends Activity implements RadioListener{
 
     Button mButtonControlStart;
     TextView mTextViewControl;
-    RadioManager mRadioManager = RadioManager.with(this);
+    RadioManager mRadioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_radio);
 
+        mRadioManager = RadioManager.with(getApplicationContext());
         mRadioManager.registerListener(this);
         mRadioManager.setLogging(true);
 
@@ -52,13 +53,6 @@ public class RadioActivity extends Activity implements RadioListener{
     protected void onResume() {
         super.onResume();
         mRadioManager.connect();
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mRadioManager.disconnect();
     }
 
     @Override

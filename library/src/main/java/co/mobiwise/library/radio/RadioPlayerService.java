@@ -282,6 +282,7 @@ public class RadioPlayerService extends Service implements PlayerCallback {
 
     public void stopFromNotification(){
         isClosedFromNotification = true;
+        if(mNotificationManager != null) mNotificationManager.cancelAll();
         stop();
     }
 
