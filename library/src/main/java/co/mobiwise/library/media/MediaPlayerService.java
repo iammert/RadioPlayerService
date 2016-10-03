@@ -39,11 +39,11 @@ public class MediaPlayerService extends Service implements
     /**
      * PLAY/PAUSE intent and OPENPLAYER intent strings
      */
-    private static final String NOTIFICATION_INTENT_PLAY_PAUSE = "co.mobiwise.library.notification.media.INTENT_PLAYPAUSE";
+    public static final String NOTIFICATION_INTENT_PLAY_PAUSE = "co.mobiwise.library.notification.media.INTENT_PLAYPAUSE";
 
-    private static final String NOTIFICATION_INTENT_CANCEL = "co.mobiwise.library.notification.media.INTENT_CANCEL";
+    public static final String NOTIFICATION_INTENT_CANCEL = "co.mobiwise.library.notification.media.INTENT_CANCEL";
 
-    private static final String NOTIFICATION_INTENT_OPEN_PLAYER = "co.mobiwise.library.notification.media.INTENT_OPENPLAYER";
+    public static final String NOTIFICATION_INTENT_OPEN_PLAYER = "co.mobiwise.library.notification.media.INTENT_OPENPLAYER";
 
     /**
      * Notification current values
@@ -206,6 +206,16 @@ public class MediaPlayerService extends Service implements
         }
     }
 
+    public void resume(){
+        if(mStreamURL != null)
+            play(mStreamURL);
+    }
+
+    public void stopFromNotification(){
+        if(mNotificationManager != null) mNotificationManager.cancelAll();
+        stop();
+    }
+
     /**
      * Stop music streaming
      */
@@ -322,9 +332,9 @@ public class MediaPlayerService extends Service implements
         /**
          * Pending intents
          */
-        PendingIntent playPausePending = PendingIntent.getService(this,0,intentPlayPause,0);
-        PendingIntent openPending = PendingIntent.getService(this,0,intentOpenPlayer,0);
-        PendingIntent cancelPending = PendingIntent.getService(this,0,intentCancel,0);
+        PendingIntent playPausePending = PendingIntent.getBroadcast(this,100,intentPlayPause,0);
+        PendingIntent openPending = PendingIntent.getBroadcast(this,101,intentOpenPlayer,0);
+        PendingIntent cancelPending = PendingIntent.getBroadcast(this,102,intentCancel,0);
 
         /**
          * Remote view for normal view

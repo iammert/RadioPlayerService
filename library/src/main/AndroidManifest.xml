@@ -33,6 +33,9 @@
                 <action android:name="co.mobiwise.library.notification.radio.INTENT_OPENPLAYER"/>
                 <action android:name="co.mobiwise.library.notification.radio.INTENT_PLAYPAUSE"/>
                 <action android:name="co.mobiwise.library.notification.radio.INTENT_CANCEL"/>
+                <action android:name="co.mobiwise.library.notification.media.INTENT_PLAYPAUSE"/>
+                <action android:name="co.mobiwise.library.notification.media.INTENT_CANCEL"/>
+                <action android:name="co.mobiwise.library.notification.media.INTENT_OPENPLAYER"/>
             </intent-filter>
         </receiver>
 
