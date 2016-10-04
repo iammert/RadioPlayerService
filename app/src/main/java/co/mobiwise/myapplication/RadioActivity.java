@@ -46,7 +46,6 @@ public class RadioActivity extends Activity implements RadioListener{
                     mRadioManager.stopRadio();
             }
         });
-
     }
 
     @Override

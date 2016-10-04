@@ -2,6 +2,7 @@ package co.mobiwise.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -36,6 +37,7 @@ public class MediaActivity extends Activity implements MediaListener {
     button = (Button) findViewById(R.id.buttoncontrol);
     buttonNext = (Button) findViewById(R.id.buttonNext);
     textView = (TextView) findViewById(R.id.textstatus);
+
 
 
     button.setOnClickListener(new View.OnClickListener() {

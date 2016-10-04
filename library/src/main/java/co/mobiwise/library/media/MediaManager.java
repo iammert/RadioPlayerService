@@ -91,6 +91,11 @@ public class MediaManager {
       mService.pause();
   }
 
+  public void resume(){
+    if(isServiceConnected)
+      mService.resume();
+  }
+
   public void seekTo(int duration) {
     if (isServiceConnected)
       mService.seekTo(duration);
