@@ -370,8 +370,13 @@ public class MediaPlayerService extends Service implements
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setContent(mNotificationTemplate)
                 .setUsesChronometer(true)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setOngoing(true)
                 .build();
+        notification.contentView = mNotificationTemplate;
         notification.flags = Notification.FLAG_ONGOING_EVENT;
+        notification.icon = R.drawable.default_art;
+        startForeground(NOTIFICATION_ID, notification);
 
         /**
          * Expanded notification
