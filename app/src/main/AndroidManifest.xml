@@ -19,6 +19,12 @@
 
         <activity android:name=".MediaActivity"/>
         <activity android:name=".RadioActivity"/>
+
+        <receiver android:name=".MyBroadcast">
+            <intent-filter>
+                <action android:name="co.mobiwise.library.notification.media.INTENT_OPENPLAYER"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
