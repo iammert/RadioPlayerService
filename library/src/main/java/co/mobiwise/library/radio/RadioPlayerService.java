@@ -26,7 +26,10 @@ import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.metadata.MetadataDecoder;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
@@ -39,7 +42,6 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.spoledge.aacdecoder.PlayerCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +52,7 @@ import co.mobiwise.library.R;
 /**
  * Created by mertsimsek on 01/07/15.
  */
-public class RadioPlayerService extends Service implements PlayerCallback, ExoPlayer.EventListener {
+public class RadioPlayerService extends Service implements ExoPlayer.EventListener {
 
     /**
      * Notification action intent strings
@@ -261,16 +263,6 @@ public class RadioPlayerService extends Service implements PlayerCallback, ExoPl
         notifyRadioStopped();
     }
 
-    @Override
-    public void playerStarted() {
-        mRadioState = State.PLAYING;
-        buildNotification();
-        notifyRadioStarted();
-
-        if (isInterrupted)
-            isInterrupted = false;
-    }
-
     public boolean isPlaying() {
         if (State.PLAYING == mRadioState)
             return true;
@@ -286,35 +278,6 @@ public class RadioPlayerService extends Service implements PlayerCallback, ExoPl
         isClosedFromNotification = true;
         if (mNotificationManager != null) mNotificationManager.cancelAll();
         stop();
-    }
-
-    @Override
-    public void playerPCMFeedBuffer(boolean b, int i, int i1) {
-        //Empty
-    }
-
-    @Override
-    public void playerStopped(int i) {
-
-
-    }
-
-    @Override
-    public void playerException(Throwable throwable) {
-        radioPlayer = null;
-        getPlayer();
-        notifyErrorOccured();
-        log("ERROR OCCURED.");
-    }
-
-    @Override
-    public void playerMetadata(String s, String s2) {
-        notifyMetaDataChanged(s, s2);
-    }
-
-    @Override
-    public void playerAudioTrackCreated(AudioTrack audioTrack) {
-        //Empty
     }
 
     public void registerListener(RadioListener mListener) {
@@ -563,6 +526,14 @@ public class RadioPlayerService extends Service implements PlayerCallback, ExoPl
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+        for (int i = 0; i < trackGroups.length; i++) {
+            TrackGroup trackGroup = trackGroups.get(i);
+            for (int j = 0; j < trackGroup.length; j++) {
+                Metadata trackMetadata = trackGroup.getFormat(j).metadata;
+                if (trackMetadata != null) {
+                }
+            }
+        }
 
     }
 
@@ -573,8 +544,6 @@ public class RadioPlayerService extends Service implements PlayerCallback, ExoPl
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
-        Log.v("TEST", "State : " + playbackState);
 
         if(playbackState == ExoPlayer.STATE_READY){
 

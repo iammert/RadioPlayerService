@@ -15,7 +15,7 @@ import co.mobiwise.library.radio.RadioManager;
  */
 public class RadioActivity extends Activity implements RadioListener{
 
-    private final String[] RADIO_URL = {"http://46.20.3.229:80/;stream.nsv"};
+    private final String[] RADIO_URL = {"https://ssl3.radyotvonline.com/radyoland/akustikland.stream/playlist.m3u8"};
 
     Button mButtonControlStart;
     TextView mTextViewControl;
