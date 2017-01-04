@@ -27,4 +27,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile files('libs/aacdecoder-android-0.8.jar')
+    compile 'com.google.android.exoplayer:exoplayer:r2.1.1'
 }
