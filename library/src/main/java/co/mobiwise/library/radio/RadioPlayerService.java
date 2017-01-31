@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioTrack;
+import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Binder;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -28,6 +30,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.metadata.MetadataDecoder;
+import com.google.android.exoplayer2.metadata.id3.Id3Decoder;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
@@ -42,17 +45,17 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import co.mobiwise.library.R;
 
 
+
 /**
  * Created by mertsimsek on 01/07/15.
  */
-public class RadioPlayerService extends Service implements ExoPlayer.EventListener {
+public class RadioPlayerService extends Service implements ExoPlayer.EventListener{
 
     /**
      * Notification action intent strings
@@ -531,6 +534,7 @@ public class RadioPlayerService extends Service implements ExoPlayer.EventListen
             for (int j = 0; j < trackGroup.length; j++) {
                 Metadata trackMetadata = trackGroup.getFormat(j).metadata;
                 if (trackMetadata != null) {
+
                 }
             }
         }
